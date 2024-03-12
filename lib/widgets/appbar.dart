@@ -24,6 +24,8 @@ class _appBarState extends State<appBar> {
     Size size = MediaQuery.of(context).size;
 
     return AppBar(
+      scrolledUnderElevation: 0.0,
+      elevation: 0.0,
       automaticallyImplyLeading: false,
       backgroundColor: bgColor,
       title: Text(

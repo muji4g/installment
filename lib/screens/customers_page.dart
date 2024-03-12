@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:installement1_app/screens/add_customer.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:installement1_app/theme/TextStyle.dart';
@@ -34,11 +35,14 @@ class _CustomersScreenState extends State<CustomersScreen> {
             child: appBar(
               title: 'Customers',
               addIcon: true,
-              onPressedFunction: () {},
+              onPressedFunction: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => AddCustomer()));
+              },
             )),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: size.width * 0.051),
+        padding: EdgeInsets.symmetric(horizontal: size.width * 0.06),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -46,7 +50,9 @@ class _CustomersScreenState extends State<CustomersScreen> {
               hintText: 'Search Customers',
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 16, left: 22),
+              padding: const EdgeInsets.only(
+                top: 16,
+              ),
               child: Opacity(
                 opacity: 0.4,
                 child: Text(
@@ -59,37 +65,34 @@ class _CustomersScreenState extends State<CustomersScreen> {
             SizedBox(
               height: size.height * 0.01,
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 12),
-              child: Row(
-                children: [
-                  customButton(
-                    activeUser: activeUser,
-                    btnText: 'Active',
-                    btnColor: activeUser ? primaryBlue : Colors.white,
-                    btntxtcolor: activeUser ? Colors.white : Colors.grey,
-                    onpressedfunction: () {
-                      setState(() {
-                        activeUser = !activeUser;
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    width: size.width * 0.06,
-                  ),
-                  customButton(
-                    onpressedfunction: () {
-                      setState(() {
-                        activeUser = !activeUser;
-                      });
-                    },
-                    activeUser: activeUser,
-                    btntxtcolor: activeUser ? Colors.grey : Colors.white,
-                    btnText: 'Deactive',
-                    btnColor: activeUser ? Colors.white : primaryBlue,
-                  ),
-                ],
-              ),
+            Row(
+              children: [
+                customButton(
+                  activeUser: activeUser,
+                  btnText: 'Active',
+                  btnColor: activeUser ? primaryBlue : Colors.white,
+                  btntxtcolor: activeUser ? Colors.white : Colors.grey,
+                  onpressedfunction: () {
+                    setState(() {
+                      activeUser = !activeUser;
+                    });
+                  },
+                ),
+                SizedBox(
+                  width: size.width * 0.03,
+                ),
+                customButton(
+                  onpressedfunction: () {
+                    setState(() {
+                      activeUser = !activeUser;
+                    });
+                  },
+                  activeUser: activeUser,
+                  btntxtcolor: activeUser ? Colors.grey : Colors.white,
+                  btnText: 'Deactive',
+                  btnColor: activeUser ? Colors.white : primaryBlue,
+                ),
+              ],
             ),
             activeUser ? ActiveCustomerList() : deactiveUser(),
           ],

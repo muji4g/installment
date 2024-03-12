@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
 import 'package:installement1_app/theme/app_colors.dart';
 import 'package:installement1_app/widgets/appbar_secondary.dart';
+import 'package:installement1_app/widgets/granter_info.dart';
 
 import 'package:installement1_app/widgets/userPaid_info_cards.dart';
 
@@ -47,7 +48,7 @@ class _PaidPaymentState extends State<PaidPayment> {
               SizedBox(
                 height: size.height * 0.01,
               ),
-              CustomerInfoCard(),
+              const CustomerInfoCardPaid(),
               SizedBox(
                 height: size.height * 0.02,
               ),
@@ -59,7 +60,7 @@ class _PaidPaymentState extends State<PaidPayment> {
               SizedBox(
                 height: size.height * 0.01,
               ),
-              CustomerInfoCard(),
+              const GranterInfoCard(),
               SizedBox(
                 height: size.height * 0.02,
               ),

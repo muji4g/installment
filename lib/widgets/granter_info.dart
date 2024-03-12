@@ -1,32 +1,13 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:installement1_app/model/granter_model.dart';
 import 'package:installement1_app/model/userdetails_model.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
 import 'package:installement1_app/theme/app_colors.dart';
 
-class GreyText extends StatelessWidget {
-  final String text;
-  const GreyText({super.key, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return Opacity(
-      opacity: 0.4,
-      child: Text(
-        text,
-        style: customTextblack.copyWith(
-            fontSize: size.width * 0.034, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-}
-
-class LeftInfoColumn extends StatelessWidget {
+class LeftInfoGranter extends StatelessWidget {
   final String title;
-  const LeftInfoColumn({super.key, required this.title});
+  const LeftInfoGranter({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +22,8 @@ class LeftInfoColumn extends StatelessWidget {
   }
 }
 
-class InfoSectionUnPaid extends StatelessWidget {
-  const InfoSectionUnPaid({super.key});
+class InfoSectionGranter extends StatelessWidget {
+  const InfoSectionGranter({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,19 +31,19 @@ class InfoSectionUnPaid extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        LeftInfoColumn(
+        LeftInfoGranter(
           title: 'Name.',
         ),
-        LeftInfoColumn(
+        LeftInfoGranter(
           title: 'Email.',
         ),
-        LeftInfoColumn(
+        LeftInfoGranter(
           title: 'Contact.',
         ),
-        LeftInfoColumn(
+        LeftInfoGranter(
           title: 'CNIC Number.',
         ),
-        LeftInfoColumn(
+        LeftInfoGranter(
           title: 'Address.',
         ),
       ],
@@ -70,11 +51,11 @@ class InfoSectionUnPaid extends StatelessWidget {
   }
 }
 
-class RightColumnInfo extends StatelessWidget {
+class RightColumnInfoGranter extends StatelessWidget {
   final bool
       copyButton; //we control where to show copy button just set the value to true to show it on other values too
   final String title;
-  const RightColumnInfo({
+  const RightColumnInfoGranter({
     super.key,
     required this.title,
     required this.copyButton,
@@ -127,8 +108,8 @@ class RightColumnInfo extends StatelessWidget {
   }
 }
 
-class CustomerInfoCardUnpaid extends StatelessWidget {
-  const CustomerInfoCardUnpaid({super.key});
+class GranterInfoCard extends StatelessWidget {
+  const GranterInfoCard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -151,27 +132,27 @@ class CustomerInfoCardUnpaid extends StatelessWidget {
                       horizontal: size.width * 0.02),
                   child: Row(
                     children: [
-                      const InfoSectionUnPaid(),
+                      const InfoSectionGranter(),
                       SizedBox(
                         width: size.width * 0.1,
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          RightColumnInfo(
-                              title: detailsList[index].customerName,
+                          RightColumnInfoGranter(
+                              title: granterInfo[index].name,
                               copyButton: false),
-                          RightColumnInfo(
-                              title: detailsList[index].customerEmail,
+                          RightColumnInfoGranter(
+                              title: granterInfo[index].email,
                               copyButton: true),
-                          RightColumnInfo(
-                              title: detailsList[index].customerContact,
+                          RightColumnInfoGranter(
+                              title: granterInfo[index].contactNum,
                               copyButton: true),
-                          RightColumnInfo(
-                              title: detailsList[index].customerNIC,
+                          RightColumnInfoGranter(
+                              title: granterInfo[index].nicNum,
                               copyButton: true),
-                          RightColumnInfo(
-                              title: detailsList[index].customerAddress,
+                          RightColumnInfoGranter(
+                              title: granterInfo[index].address,
                               copyButton: false),
                         ],
                       )

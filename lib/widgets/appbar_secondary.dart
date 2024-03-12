@@ -21,6 +21,8 @@ class AppBarSecondary extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return AppBar(
+      scrolledUnderElevation: 0.0,
+      elevation: 0.0,
       backgroundColor: bgColor,
       title: Text(
         title,
@@ -45,7 +47,16 @@ class AppBarSecondary extends StatelessWidget {
             ),
       actions: showMenu
           ? [
-              Image.asset('assets/images/menuIcon.png'),
+              Padding(
+                padding: EdgeInsets.only(right: size.width * 0.03),
+                child: InkWell(
+                  onTap: () {},
+                  child: Image.asset(
+                    'assets/images/DotsThreeVertical.png',
+                    width: size.width * 0.083,
+                  ),
+                ),
+              ),
             ]
           : null,
     );

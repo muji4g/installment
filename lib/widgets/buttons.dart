@@ -31,15 +31,19 @@ class TextBtn extends StatelessWidget {
 
 class PrimaryBtn extends StatelessWidget {
   final String btntxt;
+  final double width;
   final VoidCallback onPressedFunction;
   const PrimaryBtn(
-      {super.key, required this.btntxt, required this.onPressedFunction});
+      {super.key,
+      required this.btntxt,
+      required this.onPressedFunction,
+      required this.width});
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Ink(
-      width: size.width * .9,
+      width: width,
       height: size.height * .065,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(40),

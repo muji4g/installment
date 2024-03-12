@@ -7,6 +7,7 @@ class CustomerDetails {
   final String customerNIC;
   final String customerContact;
   final String customerEmail;
+  final num installmentDuration;
 
   CustomerDetails({
     required this.customerName,
@@ -17,12 +18,14 @@ class CustomerDetails {
     required this.customerNIC,
     required this.quantity,
     required this.order,
+    required this.installmentDuration,
   });
 }
 
 List<CustomerDetails> detailsList = [
   CustomerDetails(
       customerName: 'JohnWick',
+      installmentDuration: 0,
       customerID: '6352186548154',
       customerAddress: 'Islamabad I-10',
       customerContact: '+92 357318581581',

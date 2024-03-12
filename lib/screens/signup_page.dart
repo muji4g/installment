@@ -113,6 +113,7 @@ class _SignUpAppState extends State<SignUpApp> {
                   height: size.height * .05,
                 ),
                 PrimaryBtn(
+                  width: size.width * 0.9,
                   btntxt: 'Sign Up',
                   onPressedFunction: () {},
                 ),

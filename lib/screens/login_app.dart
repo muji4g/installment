@@ -23,6 +23,7 @@ class _LoginAppState extends State<LoginApp> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0.0,
         backgroundColor: Colors.transparent,
         actions: [
           Padding(
@@ -46,6 +47,7 @@ class _LoginAppState extends State<LoginApp> {
         child: TermsAndConditions(),
       ),
       body: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
         controller: scrollController,
         child: Padding(
           padding: EdgeInsets.only(top: size.height * 0.04),
@@ -126,6 +128,7 @@ class _LoginAppState extends State<LoginApp> {
               ),
               PrimaryBtn(
                 btntxt: 'Sign In',
+                width: size.width * 0.9,
                 onPressedFunction: () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => btmNavBar()));

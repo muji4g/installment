@@ -182,7 +182,9 @@ class _ActiveCustomerListState extends State<ActiveCustomerList> {
         scrollDirection: Axis.vertical,
         itemBuilder: (BuildContext context, int index) {
           return Padding(
-            padding: const EdgeInsets.only(bottom: 8, left: 12, right: 12),
+            padding: const EdgeInsets.only(
+              bottom: 9,
+            ),
             child: Container(
               height: size.height * 0.13,
               decoration: BoxDecoration(
@@ -328,7 +330,7 @@ class _deactiveUserState extends State<deactiveUser> {
         scrollDirection: Axis.vertical,
         itemBuilder: (BuildContext context, int index) {
           return Padding(
-              padding: const EdgeInsets.only(top: 12, left: 17, right: 17),
+              padding: const EdgeInsets.only(right: 17),
               child: Container(
                 height: size.height * 0.13,
                 decoration: BoxDecoration(

@@ -9,7 +9,7 @@ import 'package:installement1_app/screens/splashscreen_page.dart';
 
 void main() {
   runApp(DevicePreview(
-    enabled: false,
+    enabled: true,
     builder: (context) => const MyApp(),
   ));
   // MyApp()

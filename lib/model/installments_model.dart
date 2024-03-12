@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 
 class InstallmentsModel {
   final double amount;
-  final String installmentPlan;
+  final List installmentPlan;
   final List installemtnPlanwords;
   // final double durationnum;
   final List planMonths;
@@ -29,21 +29,33 @@ class InstallmentsModel {
 List<InstallmentsModel> installments = [
   InstallmentsModel(
       amount: 16500,
-      installmentPlan: '3',
+      installmentPlan: [
+        '3',
+        '6',
+        '12',
+      ],
       installemtnPlanwords: ['Months', 'Years'],
       planMonths: ['October', 'November', 'December'],
       isPaid: true,
       paymentDate: '12 April'),
   InstallmentsModel(
       amount: 16500,
-      installmentPlan: '3',
+      installmentPlan: [
+        '3',
+        '6',
+        '12',
+      ],
       installemtnPlanwords: ['Months', 'Years'],
       planMonths: ['October', 'November', 'December'],
       isPaid: true,
       paymentDate: '12 April'),
   InstallmentsModel(
       amount: 16500,
-      installmentPlan: '3',
+      installmentPlan: [
+        '3',
+        '6',
+        '12',
+      ],
       installemtnPlanwords: ['Months', 'Years'],
       planMonths: ['October', 'November', 'December'],
       isPaid: true,

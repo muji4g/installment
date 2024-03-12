@@ -40,8 +40,8 @@ class DetailTitle extends StatelessWidget {
 ///////////////////////////////////////////////////////////////
 ////The above widget is called below and the values are passed throught the widget below!!
 /////////////////////////////////////////////////////////
-class InfoSection extends StatelessWidget {
-  const InfoSection({super.key});
+class InfoSectionPaid extends StatelessWidget {
+  const InfoSectionPaid({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -177,8 +177,8 @@ class DetailSection extends StatelessWidget {
 ///Below Is the Final Widget that display results on the Screen///////////////
 ///
 ///CUSTOMER INFO CARD//////////////////////////////////////////////////
-class CustomerInfoCard extends StatelessWidget {
-  const CustomerInfoCard({
+class CustomerInfoCardPaid extends StatelessWidget {
+  const CustomerInfoCardPaid({
     super.key,
   });
 
@@ -211,7 +211,7 @@ class CustomerInfoCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        InfoSection(), //shows TYPE of detial like Customer ID, Customer Name, Customer Email
+                        InfoSectionPaid(), //shows TYPE of detial like Customer ID, Customer Name, Customer Email
                       ],
                     ),
                     SizedBox(
@@ -338,7 +338,7 @@ class InstallmentPlan extends StatelessWidget {
                           TextRow(
                               isTotal: false,
                               title: 'Instalment Duration',
-                              type: 'Months',
+                              type: installments[index].installemtnPlanwords[0],
                               value: '3'),
                           PaymentDetailRow(
                               isPaid: false,
@@ -441,6 +441,7 @@ class PaymentDetailRow extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     return isPaid == false
         ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 month,
