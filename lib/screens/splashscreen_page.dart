@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:installement1_app/screens/dashboard_page.dart';
 import 'package:installement1_app/screens/login_app.dart';
+import 'package:installement1_app/screens/onboarding_screen.dart';
 import 'package:installement1_app/theme/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -17,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const LoginApp()));
+          context, MaterialPageRoute(builder: (context) => OnboardingScreen()));
     });
   }
 
