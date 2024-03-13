@@ -49,6 +49,7 @@ class ProductModel {
   final String productStock;
   final Image productImage;
   final Image smallImage;
+  final String details;
   final bool inStock;
   ProductModel({
     required this.productName,
@@ -57,53 +58,58 @@ class ProductModel {
     required this.productImage,
     required this.smallImage,
     required this.inStock,
+    required this.details,
   });
 }
 
 List<ProductModel> productList = [
   ProductModel(
-    productName: 'Iphone 15 128GB',
-    productPrice: 'Rs. 2,87000',
-    productStock: '12PCS',
-    productImage: Image.asset('assets/images/iphoneImage.png'),
-    smallImage: Image.asset(
-      'assets/images/iphoneImage.png',
-      width: 50,
-    ),
-    inStock: true,
-  ),
+      productName: 'Iphone 15 128GB',
+      productPrice: 'Rs. 2,87000',
+      productStock: '12PCS',
+      productImage: Image.asset('assets/images/iphoneImage.png'),
+      smallImage: Image.asset(
+        'assets/images/iphoneImage.png',
+        width: 50,
+      ),
+      inStock: true,
+      details:
+          'loreamIpsumloreamIpsumloreamIpsumloreamIpsumloreamIpsumloreamIpsumloreamIpsum'),
   ProductModel(
-    productName: 'Iphone 15 128GB',
-    productPrice: 'Rs. 2,87000',
-    productStock: '12PCS',
-    productImage: Image.asset('assets/images/iphoneImage.png'),
-    smallImage: Image.asset(
-      'assets/images/iphoneImage.png',
-      width: 50,
-    ),
-    inStock: true,
-  ),
+      productName: 'Iphone 15 128GB',
+      productPrice: 'Rs. 2,87000',
+      productStock: '12PCS',
+      productImage: Image.asset('assets/images/iphoneImage.png'),
+      smallImage: Image.asset(
+        'assets/images/iphoneImage.png',
+        width: 50,
+      ),
+      inStock: true,
+      details:
+          'loreamIpsumloreamIpsumloreamIpsumloreamIpsumloreamIpsumloreamIpsumloreamIpsum'),
   ProductModel(
-    productName: 'Iphone 15 128GB',
-    productPrice: 'Rs. 2,87000',
-    productStock: '12PCS',
-    productImage: Image.asset('assets/images/iphoneImage.png'),
-    smallImage: Image.asset(
-      'assets/images/iphoneImage.png',
-      width: 50,
-    ),
-    inStock: true,
-  ),
+      productName: 'Iphone 15 128GB',
+      productPrice: 'Rs. 2,87000',
+      productStock: '12PCS',
+      productImage: Image.asset('assets/images/iphoneImage.png'),
+      smallImage: Image.asset(
+        'assets/images/iphoneImage.png',
+        width: 50,
+      ),
+      inStock: true,
+      details:
+          'loreamIpsumloreamIpsumloreamIpsumloreamIpsumloreamIpsumloreamIpsumloreamIpsum'),
   ProductModel(
-    productName: 'Iphone 15 128GB',
-    productPrice: 'Rs. 2,87',
-    productStock: '0PCS',
-    productImage: Image.asset('assets/images/iphoneImage.png'),
-    smallImage: Image.asset(
-      'assets/images/iphoneImage.png',
-      height: 90,
-      width: 50,
-    ),
-    inStock: false,
-  ),
+      productName: 'Iphone 15 128GB',
+      productPrice: 'Rs. 2,87',
+      productStock: '0PCS',
+      productImage: Image.asset('assets/images/iphoneImage.png'),
+      smallImage: Image.asset(
+        'assets/images/iphoneImage.png',
+        height: 90,
+        width: 50,
+      ),
+      inStock: false,
+      details:
+          'loreamIpsumloreamIpsumloreamIpsumloreamIpsumloreamIpsumloreamIpsumloreamIpsum'),
 ];

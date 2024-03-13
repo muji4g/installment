@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
 import 'package:installement1_app/theme/app_colors.dart';
 import 'package:installement1_app/widgets/appbar_secondary.dart';
+import 'package:installement1_app/widgets/buttons.dart';
 import 'package:installement1_app/widgets/granter_info.dart';
 
 import 'package:installement1_app/widgets/userPaid_info_cards.dart';
@@ -19,6 +20,27 @@ class _PaidPaymentState extends State<PaidPayment> {
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 21, vertical: 15),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                  width: size.width * 0.5,
+                  child: TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        'Generate Installment',
+                        style: customTextblue.copyWith(
+                            fontSize: size.width * 0.04),
+                      ))),
+              PrimaryBtn(
+                  btntxt: 'Add Payment',
+                  onPressedFunction: () {},
+                  width: size.width * 0.4),
+            ],
+          ),
+        ),
         backgroundColor: bgColor,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(75),

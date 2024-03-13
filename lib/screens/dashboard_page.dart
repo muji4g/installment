@@ -23,6 +23,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
+    final String date = 'March 2024';
     Size size = MediaQuery.of(context).size;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
@@ -51,22 +52,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
               left: size.width * 0.07,
               child: Row(
                 children: [
-                  Text('Overall Statistics', style: customTextsubtxt),
+                  Text('Overall Statistics',
+                      style: customTextsubtxt.copyWith(
+                          fontWeight: FontWeight.bold)),
                   SizedBox(
                     width: size.width * 0.3,
                   ),
-                  Row(
-                    children: [
-                      Text('March 2024', style: customTextsubtxt),
-                      SizedBox(
-                        width: size.width * 0.01,
-                      ),
-                      const Icon(
-                        FontAwesomeIcons.solidCalendar,
-                        color: secondaryBlue,
-                        size: 16,
-                      )
-                    ],
+                  InkWell(
+                    onTap: () {
+                      // CalendarDatePicker(
+                      //   initialDate: date as int,
+                      //   initialCalendarMode: DatePickerMode.day,
+                      // );
+                    },
+                    child: Row(
+                      children: [
+                        Text(date,
+                            style: customTextsubtxt.copyWith(
+                                fontWeight: FontWeight.bold)),
+                        SizedBox(
+                          width: size.width * 0.01,
+                        ),
+                        const Icon(
+                          FontAwesomeIcons.solidCalendar,
+                          color: secondaryBlue,
+                          size: 16,
+                        )
+                      ],
+                    ),
                   )
                 ],
               ),

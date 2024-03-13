@@ -33,10 +33,12 @@ class PrimaryBtn extends StatelessWidget {
   final String btntxt;
   final double width;
   final VoidCallback onPressedFunction;
+  final Color? backgroundColor;
   const PrimaryBtn(
       {super.key,
       required this.btntxt,
       required this.onPressedFunction,
+      this.backgroundColor,
       required this.width});
 
   @override

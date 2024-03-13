@@ -24,3 +24,20 @@ TextStyle customTextred = GoogleFonts.poppins(
 );
 TextStyle activebtntxt = GoogleFonts.poppins(color: Colors.white, fontSize: 12);
 TextStyle offbtntxt = GoogleFonts.poppins(color: Colors.grey, fontSize: 12);
+
+class CustomGreyText extends StatelessWidget {
+  final String title;
+  const CustomGreyText({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return Padding(
+      padding: EdgeInsets.only(bottom: size.height * 0.01),
+      child: Text(
+        title,
+        style: customTextgrey.copyWith(fontSize: size.width * 0.03),
+      ),
+    );
+  }
+}

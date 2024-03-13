@@ -177,7 +177,7 @@ class _ActiveCustomerListState extends State<ActiveCustomerList> {
     Size size = MediaQuery.of(context).size;
 
     return ListView.builder(
-        itemCount: features.length,
+        itemCount: customerList.length,
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
         itemBuilder: (BuildContext context, int index) {

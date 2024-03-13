@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:installement1_app/model/products_model.dart';
+import 'package:installement1_app/screens/product_details.dart';
 
 import 'package:installement1_app/theme/TextStyle.dart';
 import 'package:installement1_app/theme/app_colors.dart';
@@ -101,7 +102,12 @@ class _ProductGridState extends State<ProductGrid> {
                       child: ClipRRect(
                           borderRadius: BorderRadius.circular(24),
                           child: InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ProductDetails()));
+                            },
                             child: Image.asset(
                               'assets/images/iphoneImage.png',
                             ),
