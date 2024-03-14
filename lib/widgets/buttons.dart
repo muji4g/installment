@@ -147,9 +147,9 @@ class customButton extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Padding(
-      padding: EdgeInsets.only(bottom: size.width * 0.08),
+      padding: EdgeInsets.only(bottom: size.width * 0.05),
       child: Ink(
-        width: size.width * 0.24,
+        width: size.width * 0.245,
         decoration: BoxDecoration(
             color: btnColor, borderRadius: BorderRadius.circular(24)),
         child: TextButton(
@@ -190,5 +190,41 @@ class CustomButton extends StatelessWidget {
           btnText,
           style: TextStyle(color: textColor),
         ));
+  }
+}
+
+class BottomSheetButton extends StatelessWidget {
+  final double width;
+  final double height;
+  final String btntxt;
+  final VoidCallback onPressed;
+  const BottomSheetButton(
+      {super.key,
+      required this.onPressed,
+      required this.width,
+      required this.btntxt,
+      required this.height});
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return InkWell(
+      onTap: onPressed,
+      child: TextButton(
+        onPressed: () {},
+        child: Container(
+          alignment: Alignment.center,
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+              gradient: lineargradient,
+              borderRadius: BorderRadius.circular(24)),
+          child: Text(
+            btntxt,
+            style: customTextwhite.copyWith(fontSize: width * 0.06),
+          ),
+        ),
+      ),
+    );
   }
 }

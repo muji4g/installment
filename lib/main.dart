@@ -2,12 +2,17 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:installement1_app/screens/dashboard_page.dart';
+
 import 'package:installement1_app/screens/splashscreen_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 // import 'package:installement1_app/screens/SplashScreen.dart';
 // import 'package:installement1_app/screens/customersScreen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(DevicePreview(
     enabled: true,
     builder: (context) => const MyApp(),
@@ -30,6 +35,8 @@ class MyApp extends StatelessWidget {
         title: 'installments1',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          primarySwatch: Colors.blue,
+          primaryColor: Colors.blue,
           textTheme: GoogleFonts.poppinsTextTheme(),
           useMaterial3: true,
         ),

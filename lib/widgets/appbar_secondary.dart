@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:installement1_app/screens/edit_customer.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
 import 'package:installement1_app/theme/app_colors.dart';
 
@@ -50,7 +51,12 @@ class AppBarSecondary extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(right: size.width * 0.03),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        (MaterialPageRoute(
+                            builder: (context) => const EditCustomerPage())));
+                  },
                   child: Image.asset(
                     'assets/images/DotsThreeVertical.png',
                     width: size.width * 0.083,

@@ -1,11 +1,16 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:installement1_app/screens/dashboard_page.dart';
 import 'package:installement1_app/screens/signup_page.dart';
-import 'package:installement1_app/theme/Textstyle.dart';
+import 'package:installement1_app/theme/TextStyle.dart';
+
+import 'package:installement1_app/theme/app_colors.dart';
 import 'package:installement1_app/widgets/FormFields.dart';
 import 'package:installement1_app/widgets/bottomNavigationBar.dart';
 import 'package:installement1_app/widgets/buttons.dart';
+import 'package:installement1_app/widgets/large_strings.dart';
 
 class LoginApp extends StatefulWidget {
   const LoginApp({super.key});
@@ -114,12 +119,60 @@ class _LoginAppState extends State<LoginApp> {
                   btntxt: 'Reset Password?',
                   fontsize: 0.040,
                   onPressedFunction: () {
-                    // showModalBottomSheet<void>(
-                    //   context: context,
-                    //   builder: (BuildContext context) {
-                    //     return
-                    //   },
-                    // );
+                    showModalBottomSheet<void>(
+                      isScrollControlled: true,
+                      context: context,
+                      barrierColor: primaryBlue.withOpacity(0.3),
+                      builder: (context) => BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30)),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: size.height * 0.03,
+                                horizontal: size.width * 0.1),
+                            child: SingleChildScrollView(
+                              padding: MediaQuery.of(context).viewInsets,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Text(
+                                    'Reset Password',
+                                    style: customTextblack.copyWith(
+                                        fontSize: size.width * 0.04,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.01,
+                                  ),
+                                  Text(
+                                    resetstr,
+                                    style: customTextblack.copyWith(
+                                        fontSize: size.width * 0.022,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.015,
+                                  ),
+                                  TextFieldBottomSheet(
+                                    hinttxt: 'EMAIL',
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.02,
+                                  ),
+                                  BottomSheetButton(
+                                      btntxt: 'Reset',
+                                      onPressed: () {},
+                                      width: size.width * 0.7,
+                                      height: size.height * 0.05)
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
                   },
                 ),
               ),

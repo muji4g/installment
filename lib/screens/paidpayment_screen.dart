@@ -37,7 +37,7 @@ class _PaidPaymentState extends State<PaidPayment> {
               PrimaryBtn(
                   btntxt: 'Add Payment',
                   onPressedFunction: () {},
-                  width: size.width * 0.4),
+                  width: size.width * 0.35),
             ],
           ),
         ),
