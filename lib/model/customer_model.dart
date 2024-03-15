@@ -30,6 +30,12 @@ class customermodel {
     required this.customerEmail,
     required this.customerNIC,
   });
+  toJson() {
+    return {
+      "Customer Name": customerName,
+      "Customer ID": customerID,
+    };
+  }
 }
 
 List<customermodel> customerList = [

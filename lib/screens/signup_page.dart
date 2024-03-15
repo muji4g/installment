@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:installement1_app/screens/login_app.dart';
 import 'package:installement1_app/theme/Textstyle.dart';
+import 'package:installement1_app/theme/app_colors.dart';
 import 'package:installement1_app/widgets/FormFields.dart';
 
 import '../widgets/buttons.dart';
@@ -12,9 +14,39 @@ class SignUpApp extends StatefulWidget {
   State<SignUpApp> createState() => _SignUpAppState();
 }
 
+TextEditingController emailController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
+GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+String text = '';
+final firebaseauth = FirebaseAuth.instance;
+Future<void> signUpemailpass() async {
+  try {
+    await firebaseauth.createUserWithEmailAndPassword(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
+    );
+
+    print('success!');
+  } catch (e) {
+    SnackBar(
+      content: Text(
+        e.toString(),
+        style: customTextblack.copyWith(fontSize: 14),
+      ),
+      backgroundColor: white,
+      behavior: SnackBarBehavior.floating,
+    );
+  }
+  setState() {
+    text = 'Registered Successfully';
+  }
+
+  print('Function Called');
+}
+
 class _SignUpAppState extends State<SignUpApp> {
-  TextEditingController fullnameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
+  // TextEditingController fullnameController = TextEditingController();
+  // TextEditingController emailController = TextEditingController();
   TextEditingController contactController = TextEditingController();
   TextEditingController storeNameController = TextEditingController();
   TextEditingController addressController = TextEditingController();
@@ -55,13 +87,13 @@ class _SignUpAppState extends State<SignUpApp> {
             child: Column(
               // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                FormFields(
-                    formController: fullnameController,
-                    obscuretext: false,
-                    hinttxt: 'Full Name'),
-                SizedBox(
-                  height: size.height * .011,
-                ),
+                // FormFields(
+                //     formController: fullnameController,
+                //     obscuretext: false,
+                //     hinttxt: 'Full Name'),
+                // SizedBox(
+                //   height: size.height * .011,
+                // ),
                 FormFields(
                     formController: emailController,
                     obscuretext: false,
@@ -69,31 +101,32 @@ class _SignUpAppState extends State<SignUpApp> {
                 SizedBox(
                   height: size.height * .011,
                 ),
+                // FormFields(
+                //     formController: contactController,
+                //     obscuretext: false,
+                //     hinttxt: 'Contact'),
+                // SizedBox(
+                //   height: size.height * .011,
+                // ),
+                // FormFields(
+                //     formController: storeNameController,
+                //     obscuretext: false,
+                //     hinttxt: 'Store Name'),
+                // SizedBox(
+                //   height: size.height * .011,
+                // ),
+                // FormFields(
+                //     formController: addressController,
+                //     obscuretext: false,
+                //     hinttxt: 'Address'),
+                // SizedBox(
+                //   height: size.height * .011,
+                // ),
                 FormFields(
-                    formController: contactController,
-                    obscuretext: false,
-                    hinttxt: 'Contact'),
-                SizedBox(
-                  height: size.height * .011,
-                ),
-                FormFields(
-                    formController: storeNameController,
-                    obscuretext: false,
-                    hinttxt: 'Store Name'),
-                SizedBox(
-                  height: size.height * .011,
-                ),
-                FormFields(
-                    formController: addressController,
-                    obscuretext: false,
-                    hinttxt: 'Address'),
-                SizedBox(
-                  height: size.height * .011,
-                ),
-                FormFields(
-                    formController: createPassController,
+                    formController: passwordController,
                     obscuretext: true,
                     hinttxt: 'Create Password'),
+                Text(text),
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: Text(
@@ -115,7 +148,9 @@ class _SignUpAppState extends State<SignUpApp> {
                 PrimaryBtn(
                   width: size.width * 0.9,
                   btntxt: 'Sign Up',
-                  onPressedFunction: () {},
+                  onPressedFunction: () {
+                    signUpemailpass();
+                  },
                 ),
                 SizedBox(
                   height: size.height * .02,
@@ -138,3 +173,4 @@ class _SignUpAppState extends State<SignUpApp> {
     );
   }
 }
+// String email, String password

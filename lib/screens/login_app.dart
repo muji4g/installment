@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:installement1_app/screens/dashboard_page.dart';
@@ -19,9 +20,37 @@ class LoginApp extends StatefulWidget {
   State<LoginApp> createState() => _LoginAppState();
 }
 
+TextEditingController controllerEmail = TextEditingController();
+TextEditingController controllerPassword = TextEditingController();
+final auth = FirebaseAuth.instance;
+Future<void> loginApp() async {
+  if (!_isValidEmail(controllerEmail.text)) {
+    print("Invalid email address");
+    return;
+  }
+  try {
+    await auth.signInWithEmailAndPassword(
+        email: controllerEmail.text, password: controllerPassword.text);
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              DashboardScreen(), // Replace NextScreen with the screen you want to navigate to
+        ));
+  } catch (e) {
+    print(e.toString());
+  }
+}
+
+bool _isValidEmail(String email) {
+  // Regular expression for email validation
+  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
+  // Check if email matches the regex pattern
+  return emailRegex.hasMatch(email);
+}
+
 class _LoginAppState extends State<LoginApp> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
   ScrollController scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
@@ -96,7 +125,7 @@ class _LoginAppState extends State<LoginApp> {
                   width: size.width * 0.9,
                   child: FormFields(
                       obscuretext: false,
-                      formController: emailController,
+                      formController: controllerEmail,
                       hinttxt: 'Email')),
               SizedBox(
                 height: size.width * 0.06,
@@ -105,7 +134,7 @@ class _LoginAppState extends State<LoginApp> {
                   width: size.width * 0.9,
                   child: FormFields(
                       obscuretext: true,
-                      formController: passwordController,
+                      formController: controllerPassword,
                       visibilityIcon: IconButton(
                           onPressed: () {},
                           icon: const Icon(
