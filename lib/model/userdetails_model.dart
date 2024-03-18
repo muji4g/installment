@@ -7,7 +7,7 @@ class CustomerDetails {
   final String customerNIC;
   final String customerContact;
   final String customerEmail;
-  final num installmentDuration;
+  final String installmentDuration;
   final String customerPassword;
 
   CustomerDetails({
@@ -23,28 +23,28 @@ class CustomerDetails {
     required this.customerPassword,
   });
 
-  toJson() {
-    return {
-      "Full Name": customerName,
-      "Email": customerEmail,
-      "Address": customerAddress,
-      " NIC": customerNIC,
-      "Contact": customerContact,
-      "Password": customerPassword,
-    };
-  }
+  // toJson() {
+  //   return {
+  //     "Full Name": customerName,
+  //     "Email": customerEmail,
+  //     "Address": customerAddress,
+  //     " NIC": customerNIC,
+  //     "Contact": customerContact,
+  //     "Password": customerPassword,
+  //   };
+  // }
 }
 
 List<CustomerDetails> detailsList = [
   CustomerDetails(
-      customerName: 'JohnWick',
-      installmentDuration: 0,
-      customerID: '6352186548154',
-      customerAddress: 'Islamabad I-10',
-      customerContact: '+92 357318581581',
-      customerEmail: 'johnwick@gmail.com',
-      order: 'Iphone 15 128GB',
-      quantity: '1',
-      customerPassword: 'customer Password',
-      customerNIC: '3106-5713518538-6')
+      customerName: '',
+      customerID: '',
+      customerAddress: '',
+      customerContact: '',
+      customerEmail: '115120',
+      customerNIC: '',
+      quantity: '',
+      order: '',
+      installmentDuration: '',
+      customerPassword: '')
 ];

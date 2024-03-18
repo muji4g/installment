@@ -40,11 +40,11 @@ class TextFieldBottomSheet extends StatelessWidget {
           contentPadding: const EdgeInsets.all(0.0),
           label: Text(
             hinttxt,
-            style: customTextblack.copyWith(fontSize: size.width * 0.03),
+            style: customTextblack.copyWith(fontSize: size.width * 0.025),
           ),
           floatingLabelBehavior: null,
-          labelStyle: customTextgrey.copyWith(fontSize: size.width * 0.03),
-          hintStyle: customTextblack.copyWith(fontSize: 0.03)),
+          labelStyle: customTextgrey.copyWith(fontSize: size.width * 0.025),
+          hintStyle: customTextblack.copyWith(fontSize: 0.02)),
     );
   }
 }

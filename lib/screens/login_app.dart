@@ -1,8 +1,12 @@
+// ignore_for_file: use_build_context_synchronously, unrelated_type_equality_checks, prefer_const_constructors
+
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:installement1_app/screens/dashboard_page.dart';
 import 'package:installement1_app/screens/signup_page.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
@@ -12,6 +16,7 @@ import 'package:installement1_app/widgets/FormFields.dart';
 import 'package:installement1_app/widgets/bottomNavigationBar.dart';
 import 'package:installement1_app/widgets/buttons.dart';
 import 'package:installement1_app/widgets/large_strings.dart';
+import 'package:provider/provider.dart';
 
 class LoginApp extends StatefulWidget {
   const LoginApp({super.key});
@@ -22,36 +27,10 @@ class LoginApp extends StatefulWidget {
 
 TextEditingController controllerEmail = TextEditingController();
 TextEditingController controllerPassword = TextEditingController();
-final auth = FirebaseAuth.instance;
-Future<void> loginApp() async {
-  if (!_isValidEmail(controllerEmail.text)) {
-    print("Invalid email address");
-    return;
-  }
-  try {
-    await auth.signInWithEmailAndPassword(
-        email: controllerEmail.text, password: controllerPassword.text);
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>
-              DashboardScreen(), // Replace NextScreen with the screen you want to navigate to
-        ));
-  } catch (e) {
-    print(e.toString());
-  }
-}
-
-bool _isValidEmail(String email) {
-  // Regular expression for email validation
-  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-
-  // Check if email matches the regex pattern
-  return emailRegex.hasMatch(email);
-}
 
 class _LoginAppState extends State<LoginApp> {
   ScrollController scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -66,7 +45,7 @@ class _LoginAppState extends State<LoginApp> {
               onPressedFunction: () {
                 Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => SignUpApp()),
+                    MaterialPageRoute(builder: (context) => const SignUpApp()),
                     (route) => false);
               },
               btntxt:
@@ -113,7 +92,7 @@ class _LoginAppState extends State<LoginApp> {
                     'lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero ',
                     style: customTextblack.copyWith(
                         fontSize: size.width * 0.0235,
-                        color: Color(0xff9F9F9F)),
+                        color: const Color(0xff9F9F9F)),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -184,7 +163,7 @@ class _LoginAppState extends State<LoginApp> {
                                   SizedBox(
                                     height: size.height * 0.015,
                                   ),
-                                  TextFieldBottomSheet(
+                                  const TextFieldBottomSheet(
                                     hinttxt: 'EMAIL',
                                   ),
                                   SizedBox(
@@ -211,9 +190,41 @@ class _LoginAppState extends State<LoginApp> {
               PrimaryBtn(
                 btntxt: 'Sign In',
                 width: size.width * 0.9,
-                onPressedFunction: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => btmNavBar()));
+                onPressedFunction: () async {
+                  var loginEmail = controllerEmail.text.trim();
+                  var loginPassword = controllerPassword.text.trim();
+                  if (loginPassword.isNotEmpty && loginEmail.isNotEmpty) {
+                    try {
+                      final User? firebaseUser = (await FirebaseAuth.instance
+                              .signInWithEmailAndPassword(
+                                  email: loginEmail, password: loginPassword))
+                          .user;
+                      if (firebaseUser != null) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const btmNavBar()));
+                        emailController.clear();
+                        passwordController.clear();
+                      }
+                    } on FirebaseAuthException catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: Colors.red,
+                          content: e.code == 'invalid-email'
+                              ? Text('Enter A Valid Email!')
+                              : e.code == 'invalid-credential'
+                                  ? Text(
+                                      'The Email or Password are not correct')
+                                  : Text('Unknown Error Try Again Later!')));
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: Colors.red,
+                      content: Text('Enter an Email OR Password'),
+                    ));
+                  }
                 },
               ),
               SizedBox(
@@ -242,6 +253,8 @@ class _LoginAppState extends State<LoginApp> {
   @override
   void dispose() {
     // TODO: implement dispose
+    // controllerEmail.dispose();
+    // controllerPassword.dispose();
 
     scrollController.dispose();
     super.dispose();

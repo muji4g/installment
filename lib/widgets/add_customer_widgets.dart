@@ -25,13 +25,16 @@ class InfoTypeTile extends StatelessWidget {
 
 /////////////TEXT FORM FIELD /////////////////////////
 class TextFormAdd extends StatelessWidget {
-  // final TextEditingController controller;
+  final FormFieldValidator? validator;
+  final TextEditingController customercontroller;
   final String hinttext;
   final String labeltext;
   const TextFormAdd({
     super.key,
     required this.hinttext,
     required this.labeltext,
+    this.validator,
+    required this.customercontroller,
   });
 
   @override
@@ -53,8 +56,9 @@ class TextFormAdd extends StatelessWidget {
           width: size.width * 0.11,
         ),
         Expanded(
-          child: TextField(
-            // controller: controller,
+          child: TextFormField(
+            validator: validator,
+            controller: customercontroller,
             textAlign: TextAlign.left,
             keyboardType: hinttext == 'Customer ID'
                 ? TextInputType.number
@@ -80,9 +84,21 @@ class TextFormAdd extends StatelessWidget {
 
 ////////////////////////////////Customer Info adding Container//////////////////
 class AddCustomerInfoCard extends StatelessWidget {
-  const AddCustomerInfoCard({
-    super.key,
-  });
+  final TextEditingController cIDcontroller;
+  final TextEditingController customerName;
+  final TextEditingController customerEmail;
+  final TextEditingController customerContact;
+  final TextEditingController customerCNIC;
+  final TextEditingController customerAddress;
+
+  const AddCustomerInfoCard(
+      {super.key,
+      required this.cIDcontroller,
+      required this.customerName,
+      required this.customerEmail,
+      required this.customerContact,
+      required this.customerCNIC,
+      required this.customerAddress});
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +110,7 @@ class AddCustomerInfoCard extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: size.width * 0.01),
         child: SizedBox(
-          height: size.height * 0.32,
+          height: size.height * 0.35,
           child: ListView.builder(
             //the reason we use list View is simple: we can control the lenght and we can easily add items in future
             physics:
@@ -105,17 +121,62 @@ class AddCustomerInfoCard extends StatelessWidget {
                   padding: EdgeInsets.symmetric(
                       vertical: size.height * 0.005,
                       horizontal: size.width * 0.01),
-                  child: const Column(
+                  child: Column(
                     children: [
                       TextFormAdd(
-                          hinttext: 'Customer ID', labeltext: 'Customer ID'),
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please Enter a Customer ID';
+                            }
+                            return null;
+                          },
+                          customercontroller: cIDcontroller,
+                          hinttext: 'Customer ID',
+                          labeltext: 'Customer ID'),
                       TextFormAdd(
-                          hinttext: 'Enter Name Here', labeltext: 'Name.'),
-                      TextFormAdd(hinttext: 'Email.', labeltext: 'Email'),
-                      TextFormAdd(hinttext: 'Contact.', labeltext: 'Contact'),
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please Add a Customer Name';
+                            }
+                            return null;
+                          },
+                          customercontroller: customerName,
+                          hinttext: 'Enter Name Here',
+                          labeltext: 'Name.'),
                       TextFormAdd(
-                          hinttext: 'CNIC Number.', labeltext: 'CNIC number'),
-                      TextFormAdd(hinttext: 'Address.', labeltext: 'Address'),
+                          customercontroller: customerEmail,
+                          hinttext: 'Email.',
+                          labeltext: 'Email'),
+                      TextFormAdd(
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please Enter customer Contact Number';
+                            }
+                            return null;
+                          },
+                          customercontroller: customerContact,
+                          hinttext: 'Contact.',
+                          labeltext: 'Contact'),
+                      TextFormAdd(
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please Enter Customer CNIC';
+                            }
+                            return null;
+                          },
+                          customercontroller: customerCNIC,
+                          hinttext: 'CNIC Number.',
+                          labeltext: 'CNIC number'),
+                      TextFormAdd(
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please Enter Customers Address';
+                            }
+                            return null;
+                          },
+                          customercontroller: customerAddress,
+                          hinttext: 'Address.',
+                          labeltext: 'Address'),
                     ],
                   ));
             },
@@ -129,47 +190,47 @@ class AddCustomerInfoCard extends StatelessWidget {
 ///////////////////////////////////////////////////////////
 //////////////////Add Granter Info Section////////////////
 /////////////////////////////////////////////////////////
-class AddGranterInfo extends StatelessWidget {
-  const AddGranterInfo({
-    super.key,
-  });
+// class AddGranterInfo extends StatelessWidget {
+//   const AddGranterInfo({
+//     super.key,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+//   @override
+//   Widget build(BuildContext context) {
+//     Size size = MediaQuery.of(context).size;
 
-    return Container(
-      decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(18)),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: size.width * 0.01),
-        child: SizedBox(
-          height: size.height * 0.27,
-          child: ListView.builder(
-            //the reason we use list View is simple: we can control the lenght and we can easily add items in future
-            physics:
-                const NeverScrollableScrollPhysics(), //disables scroll effect
-            itemCount: 1,
-            itemBuilder: (context, index) {
-              return Padding(
-                  padding: EdgeInsets.symmetric(
-                      vertical: size.height * 0.005,
-                      horizontal: size.width * 0.01),
-                  child: const Column(
-                    children: [
-                      TextFormAdd(
-                          hinttext: 'Enter Name Here', labeltext: 'Name.'),
-                      TextFormAdd(hinttext: 'Email.', labeltext: 'Email'),
-                      TextFormAdd(hinttext: 'Contact.', labeltext: 'Contact'),
-                      TextFormAdd(
-                          hinttext: 'CNIC Number.', labeltext: 'CNIC number'),
-                      TextFormAdd(hinttext: 'Address.', labeltext: 'Address'),
-                    ],
-                  ));
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
+//     return Container(
+//       decoration: BoxDecoration(
+//           color: Colors.white, borderRadius: BorderRadius.circular(18)),
+//       child: Padding(
+//         padding: EdgeInsets.symmetric(horizontal: size.width * 0.01),
+//         child: SizedBox(
+//           height: size.height * 0.3,
+//           child: ListView.builder(
+//             //the reason we use list View is simple: we can control the lenght and we can easily add items in future
+//             physics:
+//                 const NeverScrollableScrollPhysics(), //disables scroll effect
+//             itemCount: 1,
+//             itemBuilder: (context, index) {
+//               return Padding(
+//                   padding: EdgeInsets.symmetric(
+//                       vertical: size.height * 0.005,
+//                       horizontal: size.width * 0.01),
+//                   child: const Column(
+//                     children: [
+//                       TextFormAdd(
+//                           hinttext: 'Enter Name Here', labeltext: 'Name.'),
+//                       TextFormAdd(hinttext: 'Email.', labeltext: 'Email'),
+//                       TextFormAdd(hinttext: 'Contact.', labeltext: 'Contact'),
+//                       TextFormAdd(
+//                           hinttext: 'CNIC Number.', labeltext: 'CNIC number'),
+//                       TextFormAdd(hinttext: 'Address.', labeltext: 'Address'),
+//                     ],
+//                   ));
+//             },
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

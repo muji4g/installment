@@ -1,8 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:installement1_app/screens/login_app.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
+import 'package:installement1_app/usersettings_screen.dart';
 import 'package:installement1_app/widgets/toggleButton.dart';
 
 class SettingsView extends StatefulWidget {
@@ -14,6 +18,7 @@ class SettingsView extends StatefulWidget {
 
 class _SettingsViewState extends State<SettingsView> {
   bool status = false;
+
   final List<Map<String, dynamic>> settingsOptions = [
     {
       'title': 'User',
@@ -56,32 +61,46 @@ class _SettingsViewState extends State<SettingsView> {
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.only(left: 12, right: 12),
-            child: ListTile(
-                title: Text(
-                  settingsOptions[index]['title'],
-                  style: customTextgrey.copyWith(
-                    fontSize: size.width * 0.03,
+            child: GestureDetector(
+              onTap: () {
+                handleSettingsOptionTap(index);
+              },
+              child: ListTile(
+                  title: Text(
+                    settingsOptions[index]['title'],
+                    style: customTextgrey.copyWith(
+                      fontSize: size.width * 0.03,
+                    ),
                   ),
-                ),
-                leading: Image.asset(
-                  settingsOptions[index]['icon'],
-                  width: size.width * 0.07,
-                ),
-                subtitle: Text(
-                  settingsOptions[index]['subtitle'],
-                  style: customTextblack.copyWith(
-                      fontSize: size.width * 0.04, fontWeight: FontWeight.bold),
-                ),
-                trailing: Container(
-                  width: size.width * 0.11,
-                  height: size.height * 0.03,
-                  child: settingsOptions[index]['hastoggle']
-                      ? const ToggleButton()
-                      : null,
-                )),
+                  leading: Image.asset(
+                    settingsOptions[index]['icon'],
+                    width: size.width * 0.07,
+                  ),
+                  subtitle: Text(
+                    settingsOptions[index]['subtitle'],
+                    style: customTextblack.copyWith(
+                        fontSize: size.width * 0.04,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  trailing: Container(
+                    width: size.width * 0.11,
+                    height: size.height * 0.03,
+                    child: settingsOptions[index]['hastoggle']
+                        ? const ToggleButton()
+                        : null,
+                  )),
+            ),
           );
         },
       ),
     );
+  }
+
+  void handleSettingsOptionTap(int index) {
+    Map option = settingsOptions[index];
+    if (option['title'] == 'User') {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const UserSettings()));
+    }
   }
 }

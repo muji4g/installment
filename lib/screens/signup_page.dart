@@ -1,6 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:installement1_app/model/userdetails_model.dart';
 import 'package:installement1_app/screens/login_app.dart';
+import 'package:installement1_app/services/signUp_services.dart';
 import 'package:installement1_app/theme/Textstyle.dart';
 import 'package:installement1_app/theme/app_colors.dart';
 import 'package:installement1_app/widgets/FormFields.dart';
@@ -17,41 +22,17 @@ class SignUpApp extends StatefulWidget {
 TextEditingController emailController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
 GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-String text = '';
-final firebaseauth = FirebaseAuth.instance;
-Future<void> signUpemailpass() async {
-  try {
-    await firebaseauth.createUserWithEmailAndPassword(
-      email: emailController.text.trim(),
-      password: passwordController.text.trim(),
-    );
-
-    print('success!');
-  } catch (e) {
-    SnackBar(
-      content: Text(
-        e.toString(),
-        style: customTextblack.copyWith(fontSize: 14),
-      ),
-      backgroundColor: white,
-      behavior: SnackBarBehavior.floating,
-    );
-  }
-  setState() {
-    text = 'Registered Successfully';
-  }
-
-  print('Function Called');
-}
 
 class _SignUpAppState extends State<SignUpApp> {
-  // TextEditingController fullnameController = TextEditingController();
-  // TextEditingController emailController = TextEditingController();
+  TextEditingController fullnameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController contactController = TextEditingController();
   TextEditingController storeNameController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   TextEditingController createPassController = TextEditingController();
   TextEditingController confirmPassController = TextEditingController();
+  final auth = FirebaseAuth.instance;
+  User? currentUser = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -87,13 +68,13 @@ class _SignUpAppState extends State<SignUpApp> {
             child: Column(
               // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // FormFields(
-                //     formController: fullnameController,
-                //     obscuretext: false,
-                //     hinttxt: 'Full Name'),
-                // SizedBox(
-                //   height: size.height * .011,
-                // ),
+                FormFields(
+                    formController: fullnameController,
+                    obscuretext: false,
+                    hinttxt: 'Full Name'),
+                SizedBox(
+                  height: size.height * .011,
+                ),
                 FormFields(
                     formController: emailController,
                     obscuretext: false,
@@ -101,32 +82,31 @@ class _SignUpAppState extends State<SignUpApp> {
                 SizedBox(
                   height: size.height * .011,
                 ),
-                // FormFields(
-                //     formController: contactController,
-                //     obscuretext: false,
-                //     hinttxt: 'Contact'),
-                // SizedBox(
-                //   height: size.height * .011,
-                // ),
-                // FormFields(
-                //     formController: storeNameController,
-                //     obscuretext: false,
-                //     hinttxt: 'Store Name'),
-                // SizedBox(
-                //   height: size.height * .011,
-                // ),
-                // FormFields(
-                //     formController: addressController,
-                //     obscuretext: false,
-                //     hinttxt: 'Address'),
-                // SizedBox(
-                //   height: size.height * .011,
-                // ),
+                FormFields(
+                    formController: contactController,
+                    obscuretext: false,
+                    hinttxt: 'Contact'),
+                SizedBox(
+                  height: size.height * .011,
+                ),
+                FormFields(
+                    formController: storeNameController,
+                    obscuretext: false,
+                    hinttxt: 'Store Name'),
+                SizedBox(
+                  height: size.height * .011,
+                ),
+                FormFields(
+                    formController: addressController,
+                    obscuretext: false,
+                    hinttxt: 'Address'),
+                SizedBox(
+                  height: size.height * .011,
+                ),
                 FormFields(
                     formController: passwordController,
                     obscuretext: true,
                     hinttxt: 'Create Password'),
-                Text(text),
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: Text(
@@ -148,8 +128,56 @@ class _SignUpAppState extends State<SignUpApp> {
                 PrimaryBtn(
                   width: size.width * 0.9,
                   btntxt: 'Sign Up',
-                  onPressedFunction: () {
-                    signUpemailpass();
+                  onPressedFunction: () async {
+                    var userName = fullnameController.text.trim();
+                    var userEmail = emailController.text.trim();
+                    var userContact = contactController.text.trim();
+                    var storeName = storeNameController.text.trim();
+                    var userAddress = addressController.text.trim();
+                    var userPassword = passwordController.text.trim();
+                    var confirmPassword = confirmPassController.text.trim();
+                    if (userPassword.length < 8) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: Colors.red,
+                        content:
+                            Text('Password Must be atleast 8 digits or Longer'),
+                      ));
+                    } else if (userPassword != confirmPassword) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: Colors.red,
+                        content: Text('Passwords Do Not Match'),
+                      ));
+                    } else {
+                      await auth
+                          .createUserWithEmailAndPassword(
+                              email: userEmail, password: userPassword)
+                          .then(
+                            (value) => {
+                              signUpuser(userName, userEmail, userContact,
+                                  storeName, userAddress, userPassword),
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.green,
+                                content: Text('User Created Successfully!'),
+                              )),
+                              FirebaseAuth.instance.signOut(),
+                              passwordController.clear(),
+                              fullnameController.clear(),
+                              contactController.clear(),
+                              storeNameController.clear(),
+                              addressController.clear(),
+                              createPassController.clear(),
+                              confirmPassController.clear(),
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginApp()))
+                            },
+                          );
+                    }
                   },
                 ),
                 SizedBox(
