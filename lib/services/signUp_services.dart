@@ -12,7 +12,7 @@ void signUpuser(String userName, String userEmail, String userContact,
       'ContactNum': userContact,
       'StoreName': storeName,
       'password': userPassword,
-      'Adddress': userAddress,
+      'Address': userAddress,
       'Account Created On': DateTime.now(),
     });
   } on FirebaseAuthException catch (e) {

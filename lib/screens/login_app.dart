@@ -1,13 +1,12 @@
 // ignore_for_file: use_build_context_synchronously, unrelated_type_equality_checks, prefer_const_constructors
 
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:installement1_app/screens/dashboard_page.dart';
+
 import 'package:installement1_app/screens/signup_page.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
 
@@ -16,7 +15,7 @@ import 'package:installement1_app/widgets/FormFields.dart';
 import 'package:installement1_app/widgets/bottomNavigationBar.dart';
 import 'package:installement1_app/widgets/buttons.dart';
 import 'package:installement1_app/widgets/large_strings.dart';
-import 'package:provider/provider.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class LoginApp extends StatefulWidget {
   const LoginApp({super.key});
@@ -30,9 +29,12 @@ TextEditingController controllerPassword = TextEditingController();
 
 class _LoginAppState extends State<LoginApp> {
   ScrollController scrollController = ScrollController();
+  bool isHidden = true;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
+    print('rebuilt');
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -112,14 +114,23 @@ class _LoginAppState extends State<LoginApp> {
               SizedBox(
                   width: size.width * 0.9,
                   child: FormFields(
-                      obscuretext: true,
+                      obscuretext: isHidden,
                       formController: controllerPassword,
                       visibilityIcon: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.visibility_off,
-                            color: Colors.grey,
-                          )),
+                          onPressed: () {
+                            setState(() {
+                              isHidden = !isHidden;
+                            });
+                          },
+                          icon: isHidden
+                              ? const Icon(
+                                  Icons.visibility_off,
+                                  color: Colors.grey,
+                                )
+                              : const Icon(
+                                  Icons.visibility,
+                                  color: Colors.grey,
+                                )),
                       hinttxt: 'Password')),
               Padding(
                 padding: EdgeInsets.only(left: size.width * .55, top: 2),
@@ -188,7 +199,7 @@ class _LoginAppState extends State<LoginApp> {
                 height: size.width * 0.05,
               ),
               PrimaryBtn(
-                btntxt: 'Sign In',
+                btntxt: 'SignIn',
                 width: size.width * 0.9,
                 onPressedFunction: () async {
                   var loginEmail = controllerEmail.text.trim();

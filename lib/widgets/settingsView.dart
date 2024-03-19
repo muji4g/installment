@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:installement1_app/screens/login_app.dart';
+import 'package:installement1_app/screens/signup_page.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
 import 'package:installement1_app/usersettings_screen.dart';
 import 'package:installement1_app/widgets/toggleButton.dart';
@@ -30,13 +31,13 @@ class _SettingsViewState extends State<SettingsView> {
       'title': 'Get Updated',
       'subtitle': 'Notifications',
       'icon': 'assets/images/notifications.png',
-      'hastoggle': false,
+      'hastoggle': true,
     },
     {
       'title': 'Language',
       'subtitle': 'English',
       'icon': 'assets/images/languageIcon.png',
-      'hastoggle': true,
+      'hastoggle': false,
     },
     {
       'title': 'Terms & Conditions',
@@ -101,6 +102,11 @@ class _SettingsViewState extends State<SettingsView> {
     if (option['title'] == 'User') {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => const UserSettings()));
+    } else if (option['title'] == 'Logout') {
+      FirebaseAuth.instance.signOut().then((value) => Navigator.push(
+          context, MaterialPageRoute(builder: (context) => LoginApp())));
+      controllerEmail.clear();
+      controllerPassword.clear();
     }
   }
 }
