@@ -1,5 +1,3 @@
-import 'package:flutter/gestures.dart';
-
 class InstallmentsModel {
   final double amount;
   final List installmentPlan;

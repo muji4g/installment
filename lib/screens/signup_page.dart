@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:installement1_app/model/userdetails_model.dart';
 import 'package:installement1_app/screens/login_app.dart';
 import 'package:installement1_app/services/signUp_services.dart';
@@ -31,14 +32,18 @@ class _SignUpAppState extends State<SignUpApp> {
   TextEditingController addressController = TextEditingController();
   TextEditingController createPassController = TextEditingController();
   TextEditingController confirmPassController = TextEditingController();
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
   final auth = FirebaseAuth.instance;
   User? currentUser = FirebaseAuth.instance.currentUser;
+  final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
+          scrolledUnderElevation: 0,
           centerTitle: true,
           title: Text(
             'Register',
@@ -68,62 +73,63 @@ class _SignUpAppState extends State<SignUpApp> {
             child: Column(
               // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                FormFields(
-                    formController: fullnameController,
-                    obscuretext: false,
-                    hinttxt: 'Full Name'),
+                /////Form to validate signup fields, if they are empty or not!
+                Form(
+                    key: formKey,
+                    child: Column(
+                      children: [
+                        FormFields(
+                            validatorText: 'Enter Name',
+                            formController: fullnameController,
+                            obscuretext: false,
+                            hinttxt: 'Full Name'),
+                        FormFields(
+                            validatorText: 'Enter Email',
+                            formController: emailController,
+                            obscuretext: false,
+                            hinttxt: 'Email'),
+                        FormFields(
+                            validatorText: 'Enter Contact',
+                            formController: contactController,
+                            obscuretext: false,
+                            hinttxt: 'Contact'),
+                        FormFields(
+                            validatorText: 'Enter A Store Name',
+                            formController: storeNameController,
+                            obscuretext: false,
+                            hinttxt: 'Store Name'),
+                        FormFields(
+                            validatorText: 'Enter Your Shop Address',
+                            formController: addressController,
+                            obscuretext: false,
+                            hinttxt: 'Address'),
+                        SizedBox(
+                          height: size.height * .01,
+                        ),
+                        FormFields(
+                            validatorText:
+                                'Enter Your Password atleast 8 digits',
+                            formController: passwordController,
+                            obscuretext: true,
+                            hinttxt: 'Create Password'),
+                        Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: Text(
+                            'password as unique as you are your gateway to secure and seamless access.',
+                            style: customTextgrey.copyWith(
+                                fontSize: size.width * 0.025),
+                          ),
+                        ),
+                        FormFields(
+                            validatorText: 'Kindly Confirm Your Password',
+                            formController: confirmPassController,
+                            obscuretext: true,
+                            hinttxt: 'Confirm Password'),
+                      ],
+                    )),
+
                 SizedBox(
-                  height: size.height * .011,
-                ),
-                FormFields(
-                    formController: emailController,
-                    obscuretext: false,
-                    hinttxt: 'Email'),
-                SizedBox(
-                  height: size.height * .011,
-                ),
-                FormFields(
-                    formController: contactController,
-                    obscuretext: false,
-                    hinttxt: 'Contact'),
-                SizedBox(
-                  height: size.height * .011,
-                ),
-                FormFields(
-                    formController: storeNameController,
-                    obscuretext: false,
-                    hinttxt: 'Store Name'),
-                SizedBox(
-                  height: size.height * .011,
-                ),
-                FormFields(
-                    formController: addressController,
-                    obscuretext: false,
-                    hinttxt: 'Address'),
-                SizedBox(
-                  height: size.height * .011,
-                ),
-                FormFields(
-                    formController: passwordController,
-                    obscuretext: true,
-                    hinttxt: 'Create Password'),
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: Text(
-                    'password as unique as you are your gateway to secure and seamless access.',
-                    style:
-                        customTextgrey.copyWith(fontSize: size.width * 0.025),
-                  ),
-                ),
-                SizedBox(
-                  height: size.height * .013,
-                ),
-                FormFields(
-                    formController: confirmPassController,
-                    obscuretext: true,
-                    hinttxt: 'Confirm Password'),
-                SizedBox(
-                  height: size.height * .05,
+                  height: size.height * .03,
                 ),
                 PrimaryBtn(
                   width: size.width * 0.9,
@@ -136,62 +142,67 @@ class _SignUpAppState extends State<SignUpApp> {
                     var userAddress = addressController.text.trim();
                     var userPassword = passwordController.text.trim();
                     var confirmPassword = confirmPassController.text.trim();
-                    if (userPassword.length < 8) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: Colors.red,
-                        content:
-                            Text('Password Must be atleast 8 digits or Longer'),
-                      ));
-                    } else if (userPassword != confirmPassword) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: Colors.red,
-                        content: Text('Passwords Do Not Match'),
-                      ));
-                    } else {
-                      await auth
-                          .createUserWithEmailAndPassword(
-                              email: userEmail, password: userPassword)
-                          .then(
-                            (value) => {
-                              signUpuser(userName, userEmail, userContact,
-                                  storeName, userAddress, userPassword),
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                behavior: SnackBarBehavior.floating,
-                                backgroundColor: Colors.green,
-                                content: Text('User Created Successfully!'),
-                              )),
-                              FirebaseAuth.instance.signOut(),
-                              passwordController.clear(),
-                              fullnameController.clear(),
-                              contactController.clear(),
-                              storeNameController.clear(),
-                              addressController.clear(),
-                              createPassController.clear(),
-                              confirmPassController.clear(),
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => LoginApp()))
-                            },
-                          );
+                    if (formKey.currentState!.validate()) {
+                      if (userPassword.length < 8) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: Colors.red,
+                          content: Text(
+                              'Password Must be atleast 8 digits or Longer'),
+                        ));
+                      } else if (userPassword != confirmPassword) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: Colors.red,
+                          content: Text('Passwords Do Not Match'),
+                        ));
+                      } else {
+                        await auth
+                            .createUserWithEmailAndPassword(
+                                email: userEmail, password: userPassword)
+                            .then(
+                              (value) => {
+                                signUpuser(userName, userEmail, userContact,
+                                    storeName, userAddress, userPassword),
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Colors.green,
+                                  content: Text('User Created Successfully!'),
+                                )),
+                                FirebaseAuth.instance.signOut(),
+                                passwordController.clear(),
+                                fullnameController.clear(),
+                                contactController.clear(),
+                                storeNameController.clear(),
+                                addressController.clear(),
+                                createPassController.clear(),
+                                confirmPassController.clear(),
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginApp()))
+                              },
+                            );
+                      }
                     }
                   },
                 ),
                 SizedBox(
-                  height: size.height * .02,
+                  height: size.height * .01,
                 ),
                 Text(
                   'or',
                   style: customTextgrey.copyWith(fontSize: size.width * 0.03),
                 ),
                 SizedBox(
-                  height: size.height * .02,
+                  height: size.height * .01,
                 ),
-                const SecondayBtn(
-                  btntxt: 'Sign In With Google',
+                SecondayBtn(
+                  onPressed: () {},
+                  btntxt: 'Sign Up With Google',
                 ),
               ],
             ),

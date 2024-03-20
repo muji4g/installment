@@ -3,11 +3,15 @@
 import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:installement1_app/screens/dashboard_page.dart';
 
 import 'package:installement1_app/screens/signup_page.dart';
+import 'package:installement1_app/screens/signup_screen_google.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
 
 import 'package:installement1_app/theme/app_colors.dart';
@@ -15,7 +19,6 @@ import 'package:installement1_app/widgets/FormFields.dart';
 import 'package:installement1_app/widgets/bottomNavigationBar.dart';
 import 'package:installement1_app/widgets/buttons.dart';
 import 'package:installement1_app/widgets/large_strings.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class LoginApp extends StatefulWidget {
   const LoginApp({super.key});
@@ -24,14 +27,77 @@ class LoginApp extends StatefulWidget {
   State<LoginApp> createState() => _LoginAppState();
 }
 
-TextEditingController controllerEmail = TextEditingController();
-TextEditingController controllerPassword = TextEditingController();
-
 class _LoginAppState extends State<LoginApp> {
   ScrollController scrollController = ScrollController();
   bool isHidden = true;
   bool isLoading = false;
+  TextEditingController controllerEmail = TextEditingController();
+  TextEditingController controllerPassword = TextEditingController();
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+  TextEditingController resetPassController = TextEditingController();
+  final auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+/////////////////////////////////////////////////////////////
+  //////////Function for Google SIGN IN/////////////////////
+  ///////////////////////////////////////////////////
+  Future<void> signInWithGoogle() async {
+    try {
+      GoogleSignIn().signOut();
+      final GoogleSignInAccount? googleSignInAccount =
+          await _googleSignIn.signIn();
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+            await googleSignInAccount.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+
+        final UserCredential userCredential =
+            await auth.signInWithCredential(credential);
+        final User? user = userCredential.user;
+
+        if (user != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SignUpGoogle()),
+          );
+        } else {
+          // Handle the case where user is null
+          print('Error signing in with Google: User is null');
+        }
+      }
+    } catch (e) {
+      // Handle the Google Sign-In error
+      print('Error signing in with Google: $e');
+    }
+  }
+
+  //////////////////////PasswordResetfUNCTION///////////////////
+  void resetPassword() async {
+    String email = resetPassController.text.trim();
+    if (email.isNotEmpty) {
+      try {
+        await FirebaseAuth.instance.sendPasswordResetEmail(email: email).then(
+            (value) => SnackBar(content: Text('Reset Email Has Been Sent')));
+      } catch (e) {
+        final snackBar = SnackBar(
+          content: Text('$e'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    } else {
+      final snackBar = SnackBar(
+        content: Text('Enter An Email'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+////////////////////////////////////////////////
+///////////////////////////////////////////////
   @override
   Widget build(BuildContext context) {
     print('rebuilt');
@@ -105,6 +171,7 @@ class _LoginAppState extends State<LoginApp> {
               SizedBox(
                   width: size.width * 0.9,
                   child: FormFields(
+                      validatorText: 'Enter Your Email',
                       obscuretext: false,
                       formController: controllerEmail,
                       hinttxt: 'Email')),
@@ -114,6 +181,7 @@ class _LoginAppState extends State<LoginApp> {
               SizedBox(
                   width: size.width * 0.9,
                   child: FormFields(
+                      validatorText: 'Enter Your Password',
                       obscuretext: isHidden,
                       formController: controllerPassword,
                       visibilityIcon: IconButton(
@@ -174,7 +242,8 @@ class _LoginAppState extends State<LoginApp> {
                                   SizedBox(
                                     height: size.height * 0.015,
                                   ),
-                                  const TextFieldBottomSheet(
+                                  TextFieldBottomSheet(
+                                    resetPassController: resetPassController,
                                     hinttxt: 'EMAIL',
                                   ),
                                   SizedBox(
@@ -182,7 +251,10 @@ class _LoginAppState extends State<LoginApp> {
                                   ),
                                   BottomSheetButton(
                                       btntxt: 'Reset',
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        print(resetPassController.toString());
+                                        resetPassword();
+                                      },
                                       width: size.width * 0.7,
                                       height: size.height * 0.05)
                                 ],
@@ -248,7 +320,10 @@ class _LoginAppState extends State<LoginApp> {
               SizedBox(
                 height: size.width * 0.05,
               ),
-              const SecondayBtn(
+              SecondayBtn(
+                onPressed: () {
+                  signInWithGoogle();
+                },
                 btntxt: 'Sign In With Google',
               ),
               SizedBox(

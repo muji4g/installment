@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:installement1_app/theme/app_colors.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
+import 'package:installement1_app/views/terms_conditions_view.dart';
 
 class TextBtn extends StatelessWidget {
   final String btntxt;
@@ -63,9 +64,10 @@ class PrimaryBtn extends StatelessWidget {
 
 //secondarybutton
 class SecondayBtn extends StatelessWidget {
+  final VoidCallback onPressed;
   final String btntxt;
 
-  const SecondayBtn({super.key, required this.btntxt});
+  const SecondayBtn({super.key, required this.btntxt, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +80,7 @@ class SecondayBtn extends StatelessWidget {
         color: secondaryWhite,
       ),
       child: TextButton(
-          onPressed: () {},
+          onPressed: onPressed,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -115,7 +117,10 @@ class TermsAndConditions extends StatelessWidget {
           style: customTextblack.copyWith(fontSize: size.width * 0.036),
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => TermsConditions()));
+          },
           child: Text(
             'Terms And Conditions',
             style: customTextblue.copyWith(
@@ -211,7 +216,7 @@ class BottomSheetButton extends StatelessWidget {
     return InkWell(
       onTap: onPressed,
       child: TextButton(
-        onPressed: () {},
+        onPressed: onPressed,
         child: Container(
           alignment: Alignment.center,
           width: width,

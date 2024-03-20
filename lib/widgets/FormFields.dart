@@ -7,9 +7,11 @@ class FormFields extends StatelessWidget {
   final String hinttxt;
   final bool obscuretext;
   final IconButton? visibilityIcon;
+  final String validatorText;
 
   const FormFields(
       {super.key,
+      required this.validatorText,
       required this.formController,
       required this.obscuretext,
       required this.hinttxt,
@@ -18,24 +20,32 @@ class FormFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+        validator: (value) {
+          if (value!.isEmpty) {
+            return validatorText;
+          }
+        },
         obscureText: obscuretext,
         controller: formController,
         decoration: InputDecoration(
           suffixIcon: visibilityIcon,
           hintText: hinttxt,
-          contentPadding: EdgeInsets.all(14),
+          hintStyle: TextStyle(fontSize: 14),
         ));
   }
 }
 
 class TextFieldBottomSheet extends StatelessWidget {
+  final TextEditingController resetPassController;
   final String hinttxt;
-  const TextFieldBottomSheet({super.key, required this.hinttxt});
+  const TextFieldBottomSheet(
+      {super.key, required this.hinttxt, required this.resetPassController});
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return TextFormField(
+      controller: resetPassController,
       decoration: InputDecoration(
           contentPadding: const EdgeInsets.all(0.0),
           label: Text(

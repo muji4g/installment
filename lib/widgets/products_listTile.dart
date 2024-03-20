@@ -22,6 +22,7 @@ class CategoryList extends StatefulWidget {
 }
 
 class _CategoryList extends State<CategoryList> {
+  TextEditingController controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -103,6 +104,7 @@ class _CategoryList extends State<CategoryList> {
                                         height: size.height * 0.015,
                                       ),
                                       TextFieldBottomSheet(
+                                        resetPassController: controller,
                                         hinttxt: 'Category Name',
                                       ),
                                       SizedBox(

@@ -105,8 +105,8 @@ class _SettingsViewState extends State<SettingsView> {
     } else if (option['title'] == 'Logout') {
       FirebaseAuth.instance.signOut().then((value) => Navigator.push(
           context, MaterialPageRoute(builder: (context) => LoginApp())));
-      controllerEmail.clear();
-      controllerPassword.clear();
+      // controllerEmail.clear();
+      // controllerPassword.clear();
     }
   }
 }

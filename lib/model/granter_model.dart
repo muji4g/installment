@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class GranterModel {
   final String name;
   final String email;

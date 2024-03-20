@@ -9,8 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:installement1_app/theme/app_colors.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
 import 'package:installement1_app/widgets/ListTile.dart';
-import 'package:installement1_app/widgets/bottomNavbar.dart';
-import 'package:installement1_app/widgets/bottomNavigationBar.dart';
+
 import 'package:installement1_app/widgets/statisticsContainer.dart';
 
 class DashboardScreen extends StatefulWidget {
