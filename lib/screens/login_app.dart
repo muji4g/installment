@@ -2,6 +2,7 @@
 
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -41,37 +42,89 @@ class _LoginAppState extends State<LoginApp> {
 /////////////////////////////////////////////////////////////
   //////////Function for Google SIGN IN/////////////////////
   ///////////////////////////////////////////////////
-  Future<void> signInWithGoogle() async {
+
+  Future<User?> signingoogle() async {
     try {
-      GoogleSignIn().signOut();
-      final GoogleSignInAccount? googleSignInAccount =
-          await _googleSignIn.signIn();
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
+      final GoogleSignInAccount? googleaccount = await GoogleSignIn().signIn();
+      print('creating a google user sign in session');
 
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleSignInAuthentication.accessToken,
-          idToken: googleSignInAuthentication.idToken,
-        );
-
-        final UserCredential userCredential =
-            await auth.signInWithCredential(credential);
-        final User? user = userCredential.user;
-
-        if (user != null) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SignUpGoogle()),
-          );
-        } else {
-          // Handle the case where user is null
-          print('Error signing in with Google: User is null');
-        }
+      if (googleaccount == null) {
+        print('if null functionality');
+        return null;
       }
+      print('Creating Google Auth');
+      final GoogleSignInAuthentication googleAuth =
+          await googleaccount.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      print('creating User Credential');
+
+      final User? user = userCredential.user;
+
+      if (user != null) {
+        final CollectionReference users =
+            FirebaseFirestore.instance.collection('users');
+        print('Null check');
+        final DocumentSnapshot emailDocument = await users.doc(user.uid).get();
+        final DocumentSnapshot email = await users.doc(user.email).get();
+        if (emailDocument.exists) {
+          print('Push To btmnavbar screen');
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => btmNavBar()));
+          //   break;
+          print('Push To btmnavbar screen');
+        } else {
+          await users.doc(user.uid).set({'email': user.email});
+          final AuthCredential emailAuthCredential =
+              EmailAuthProvider.credential(
+                  email: user.email.toString(), password: 'google password');
+          await userCredential.user!.linkWithCredential(emailAuthCredential);
+          print('Push To SIGNUP SCREEN');
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SignUpGoogle(
+                        email: email.toString(),
+                      )));
+          print('Push hhh To SIGNUP SCREEN');
+        }
+      } else {}
+      GoogleSignIn().signOut();
+      return user;
     } catch (e) {
-      // Handle the Google Sign-In error
-      print('Error signing in with Google: $e');
+      print('$e');
+    }
+    return null;
+  }
+
+  // Future<bool> checkUserExists(String uid) async {
+  //   try {
+  //     // Retrieve user data from Firebase Authentication
+  //     User? user = FirebaseAuth.instance.currentUser;
+
+  //     // Check if the user is not null and their UID matches the provided UID
+  //     if (user != null && user.uid == uid) {
+  //       return true; // User exists
+  //     } else {
+  //       return false; // User does not exist
+  //     }
+  //   } catch (e) {
+  //     print('Error checking user existence: $e');
+  //     return false; // Assume user does not exist in case of an error
+  //   }
+  // }
+  Future<bool> checkUserExists(String uid) async {
+    try {
+      User? firebaseUser = auth.currentUser;
+      return firebaseUser != null;
+    } catch (e) {
+      print('Error checking user existence: $e');
+      return false;
     }
   }
 
@@ -322,7 +375,7 @@ class _LoginAppState extends State<LoginApp> {
               ),
               SecondayBtn(
                 onPressed: () {
-                  signInWithGoogle();
+                  signingoogle();
                 },
                 btntxt: 'Sign In With Google',
               ),
@@ -346,3 +399,38 @@ class _LoginAppState extends State<LoginApp> {
     super.dispose();
   }
 }
+
+
+  // Future<void> signInWithGoogle() async {
+  //   try {
+  //     GoogleSignIn().signOut();
+  //     final GoogleSignInAccount? googleSignInAccount =
+  //         await _googleSignIn.signIn();
+  //     if (googleSignInAccount != null) {
+  //       final GoogleSignInAuthentication googleSignInAuthentication =
+  //           await googleSignInAccount.authentication;
+
+  //       final AuthCredential credential = GoogleAuthProvider.credential(
+  //         accessToken: googleSignInAuthentication.accessToken,
+  //         idToken: googleSignInAuthentication.idToken,
+  //       );
+
+  //       final UserCredential userCredential =
+  //           await auth.signInWithCredential(credential);
+  //       final User? user = userCredential.user;
+
+  //       if (user != null) {
+  //         Navigator.push(
+  //           context,
+  //           MaterialPageRoute(builder: (context) => SignUpGoogle()),
+  //         );
+  //       } else {
+  //         // Handle the case where user is null
+  //         print('Error signing in with Google: User is null');
+  //       }
+  //     }
+  //   } catch (e) {
+  //     // Handle the Google Sign-In error
+  //     print('Error signing in with Google: $e');
+  //   }
+  // }

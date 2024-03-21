@@ -1,5 +1,9 @@
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,154 +14,196 @@ import 'package:installement1_app/screens/product_details.dart';
 
 import 'package:installement1_app/theme/TextStyle.dart';
 import 'package:installement1_app/theme/app_colors.dart';
-import 'package:installement1_app/widgets/FormFields.dart';
+
 import 'package:installement1_app/widgets/buttons.dart';
-import 'package:installement1_app/widgets/large_strings.dart';
+
+import 'dart:io';
+
+import 'package:image_picker/image_picker.dart';
 
 class CategoryList extends StatefulWidget {
-  const CategoryList({super.key});
+  const CategoryList({Key? key}) : super(key: key);
 
   @override
-  State<CategoryList> createState() => _CategoryList();
+  State<CategoryList> createState() => _CategoryListState();
 }
 
-class _CategoryList extends State<CategoryList> {
-  TextEditingController controller = TextEditingController();
+class _CategoryListState extends State<CategoryList> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return SizedBox(
-      height: size.height * 0.096,
-      child: ListView.builder(
-          itemCount: categoryList.length,
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (_, index) {
-            return Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
-                  child: InkWell(
-                    onTap: () {
-                      if (categoryList[index].categoryType == 'Add') {
-                        showModalBottomSheet<void>(
-                          isScrollControlled: true,
-                          context: context,
-                          barrierColor: primaryBlue.withOpacity(0.3),
-                          builder: (context) => BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30)),
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: size.height * 0.03,
-                                    horizontal: size.width * 0.1),
-                                child: SingleChildScrollView(
-                                  padding: MediaQuery.of(context).viewInsets,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      Text(
-                                        'Add Category',
-                                        style: customTextblack.copyWith(
-                                            fontSize: size.width * 0.04,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.01,
-                                      ),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(28),
-                                          color: Colors.grey.withOpacity(0.2),
-                                        ),
-                                        width: size.width * 0.8,
-                                        height: size.height * 0.25,
-                                        child: InkWell(
-                                          onTap: () {},
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                FontAwesomeIcons.image,
-                                                size: size.width * 0.1,
-                                                color: Color(0xffC2C2C2),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text(
-                                                  'Upload Image',
-                                                  style:
-                                                      customTextgrey.copyWith(
-                                                          fontSize: size.width *
-                                                              0.03),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.015,
-                                      ),
-                                      TextFieldBottomSheet(
-                                        resetPassController: controller,
-                                        hinttxt: 'Category Name',
-                                      ),
-                                      SizedBox(
-                                        height: size.height * 0.02,
-                                      ),
-                                      BottomSheetButton(
-                                          btntxt: 'Add',
-                                          onPressed: () {},
-                                          width: size.width * 0.7,
-                                          height: size.height * 0.05)
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
+    User? user = FirebaseAuth.instance.currentUser;
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .collection('categories')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          // Extracting categories from the snapshot
+          List<Category> categories = snapshot.data!.docs
+              .map((doc) => Category.fromSnapshot(doc))
+              .toList();
+          return SizedBox(
+            height: 100,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: categories.length +
+                  2, // Additional 2 for 'All' and 'Add' categories
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return _buildCategoryWidget(Icons.image, 'All', () {});
+                } else if (index == 1) {
+                  return _buildCategoryWidget(Icons.add, 'Add', () {
+                    _showAddCategoryBottomSheet(context);
+                  });
+                } else {
+                  Category category = categories[index - 2];
+                  return _buildCategoryWidget(
+                      Icons.image, category.title, () {});
+                }
+              },
+            ),
+          );
+        } else {
+          return CircularProgressIndicator();
+        }
+      },
+    );
+  }
+
+  Widget _buildCategoryWidget(
+      IconData iconData, String title, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 5),
+        child: Column(
+          children: [
+            CircleAvatar(
+              radius: 35,
+              backgroundColor: Colors.blueGrey,
+              child: Icon(iconData),
+            ),
+            SizedBox(height: 5),
+            Text(title),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showAddCategoryBottomSheet(BuildContext context) async {
+    Size size = MediaQuery.of(context).size;
+    User? user = FirebaseAuth.instance.currentUser;
+    TextEditingController titleController = TextEditingController();
+    XFile? imageFile;
+    Future<void> _pickImageFromGallery() async {
+      XFile? pickedFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+      setState(() {
+        imageFile = pickedFile;
+      });
+    }
+
+    // Function to handle image selection from camera
+    Future<void> _pickImageFromCamera() async {
+      XFile? pickedFile =
+          await ImagePicker().pickImage(source: ImageSource.camera);
+      setState(() {
+        imageFile = pickedFile;
+      });
+    }
+
+    if (user != null) {
+      await showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        barrierColor: primaryBlue.withOpacity(0.3),
+        builder: (context) {
+          return BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+            child: Container(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Add Category',
+                    style: customTextblack.copyWith(
+                        fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(28),
+                      color: Colors.grey.withOpacity(0.2),
+                    ),
+                    width: size.width * 0.8,
+                    height: size.height * 0.25,
+                    child: InkWell(
+                      onTap: () {},
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.image,
+                            size: size.width * 0.1,
+                            color: Color(0xffC2C2C2),
                           ),
-                        );
-                      }
-                    },
-                    splashColor: primaryBlue,
-                    borderRadius: BorderRadius.circular(55),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: categoryList[index].hasbgColor
-                              ? lineargradient
-                              : null),
-                      child: CircleAvatar(
-                        backgroundColor: categoryList[index].hasbgColor
-                            ? Colors.transparent
-                            : Colors.white,
-                        radius: 25,
-                        child: SvgPicture.asset(
-                          categoryList[index].categoryImage,
-                          width: categoryList[index].hasbgColor
-                              ? size.width * 0.07
-                              : size.width * 0.17,
-                        ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Upload Image',
+                              style: customTextgrey.copyWith(
+                                  fontSize: size.width * 0.03),
+                            ),
+                          )
+                        ],
                       ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: size.height * 0.005,
-                ),
-                Text(categoryList[index].categoryType),
-              ],
-            );
-          }),
-    );
+                  TextField(
+                    controller: titleController,
+                    decoration: InputDecoration(labelText: 'Category Title'),
+                  ),
+                  SizedBox(height: 20),
+                  BottomSheetButton(
+                      btntxt: 'Add',
+                      onPressed: () async {
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(user.uid)
+                            .collection('categories')
+                            .add({
+                          'title': titleController.text,
+                        });
+                        Navigator.pop(context);
+                      },
+                      width: size.width * 0.7,
+                      height: size.height * 0.05)
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
   }
 }
 
+class Category {
+  final String title;
+
+  Category(this.title);
+
+  Category.fromSnapshot(DocumentSnapshot snapshot) : title = snapshot['title'];
+}
+
+///////////////////////////////
+////
+/////PRODUCT GRIDS//////////
+///////////////////
 class ProductGrid extends StatefulWidget {
   const ProductGrid({super.key});
 
@@ -166,6 +212,44 @@ class ProductGrid extends StatefulWidget {
 }
 
 class _ProductGridState extends State<ProductGrid> {
+  List<Map<String, dynamic>> productsList = [];
+  String productTitle = '';
+  String productQuantity = '';
+  String productPrice = '';
+
+  void initState() {
+    super.initState();
+    fetchProductDetails();
+    // TODO: implement initState
+    setState(() {});
+  }
+
+  void fetchProductDetails() async {
+    int index;
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+          .instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('products')
+          .get();
+
+      if (snapshot.size > 0) {
+        setState(() {
+          productsList = snapshot.docs.map((doc) => doc.data()).toList();
+        });
+        Map<String, dynamic> productData = snapshot.docs[0].data();
+        productTitle = productData['title'];
+
+        productPrice = productData['price'];
+        productQuantity = productData['quantity'];
+
+        setState(() {});
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -176,8 +260,9 @@ class _ProductGridState extends State<ProductGrid> {
               childAspectRatio: 0.88,
               mainAxisSpacing: size.height * 0.01,
               crossAxisSpacing: size.width * 0.017),
-          itemCount: productList.length,
+          itemCount: productsList.length,
           itemBuilder: (context, index) {
+            Map<String, dynamic> productData = productsList[index];
             return Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
@@ -214,25 +299,19 @@ class _ProductGridState extends State<ProductGrid> {
                       child: Row(
                         children: [
                           Text(
-                            productList[index].productName,
-                            style: customTextblack.copyWith(
-                                fontSize: size.width * 0.030,
-                                fontWeight: FontWeight.w600),
+                            productData['title'],
+                            style: customTextblack,
                           ),
-                          Text('(' + productList[index].productStock + ')',
-                              style: productList[index].inStock
-                                  ? customTextgreen.copyWith(
-                                      fontSize: size.width * 0.030,
-                                      fontWeight: FontWeight.w600)
-                                  : customTextred.copyWith(
-                                      fontSize: size.width * 0.030,
-                                      fontWeight: FontWeight.w600))
+                          Text(
+                            ('' + productData['quantity'] + ''),
+                            style: customTextblack,
+                          ),
                         ],
                       ),
                     ),
                     Padding(
                       padding: EdgeInsets.only(right: size.width * 0.2),
-                      child: Text(productList[index].productPrice,
+                      child: Text(productData['price'],
                           style: customTextgreen.copyWith(
                               fontSize: size.width * 0.030,
                               fontWeight: FontWeight.w600)),

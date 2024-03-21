@@ -5,10 +5,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:installement1_app/screens/login_app.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
 import 'package:installement1_app/widgets/FormFields.dart';
+import 'package:installement1_app/widgets/bottomNavigationBar.dart';
 import 'package:installement1_app/widgets/buttons.dart';
 
 class SignUpGoogle extends StatefulWidget {
-  const SignUpGoogle({Key? key}) : super(key: key);
+  final String? email;
+  const SignUpGoogle({Key? key, required this.email}) : super(key: key);
 
   @override
   State<SignUpGoogle> createState() => _SignUpGoogleState();
@@ -24,53 +26,31 @@ class _SignUpGoogleState extends State<SignUpGoogle> {
   final firestore = FirebaseFirestore.instance;
   User? currentUser = FirebaseAuth.instance.currentUser;
 
-  Future<void> signInWithGoogle() async {
+  Future<String?> getUserDisplayName(User user) async {
     try {
-      final GoogleSignInAccount? googleSignInAccount =
-          await _googleSignIn.signIn();
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
+      await user.reload();
+      final User? currentUser = FirebaseAuth.instance.currentUser;
 
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleSignInAuthentication.accessToken,
-          idToken: googleSignInAuthentication.idToken,
-        );
-
-        final UserCredential userCredential =
-            await auth.signInWithCredential(credential);
-        final User? user = userCredential.user;
-
-        if (user != null) {
-          // Store user data in Firestore
-          await storeUserData(user.email!);
-
-          // Navigate to desired screen
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginApp()),
-          );
-        } else {
-          // Handle the case where user is null
-          print('Error signing in with Google: User is null');
-        }
-      }
-    } catch (e) {
-      // Handle the Google Sign-In error
-      print('Error signing in with Google: $e');
+      return currentUser!.displayName;
+    } catch (error) {
+      print('Error retrieving user display name: $error');
+      return null;
     }
   }
 
-  Future<void> storeUserData(String email) async {
+  Future<void> saveUserData(String userId, String email, String contact,
+      String storeName, String address) async {
     try {
-      await firestore.collection('users').doc(email).set({
-        'contactNumber': contactController.text.trim(),
-        'storeName': storeNameController.text.trim(),
-        'address': addressController.text.trim(),
+      // Save user data to Firestore
+      await firestore.collection('users').doc(userId).set({
+        'Email': email,
+        'ContactNum': contact,
+        'storeName': storeName,
+        'Adddress': address,
+        'Full Name': getUserDisplayName(FirebaseAuth.instance.currentUser!)
       });
-      print('User data stored in Firestore successfully');
-    } catch (error) {
-      print('Error storing user data in Firestore: $error');
+    } catch (e) {
+      print('Error saving user data: $e');
     }
   }
 
@@ -90,11 +70,12 @@ class _SignUpGoogleState extends State<SignUpGoogle> {
           Padding(
             padding: const EdgeInsets.only(right: 7.0),
             child: TextBtn(
-              onPressedFunction: () {
+              onPressedFunction: () async {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginApp()),
                 );
+                await FirebaseAuth.instance.currentUser!.delete();
               },
               btntxt: 'Sign In',
               fontsize: 0.035,
@@ -137,12 +118,39 @@ class _SignUpGoogleState extends State<SignUpGoogle> {
                 ),
                 SizedBox(height: size.height * .03),
                 SecondayBtn(
-                  onPressed: () {
-                    // var userContact = contactController.text.trim();
-                    // var storeName = storeNameController.text.trim();
-                    // var userAddress = addressController.text.trim();
+                  onPressed: () async {
+                    var userContact = contactController.text.trim();
+                    var storeName = storeNameController.text.trim();
+                    var userAddress = addressController.text.trim();
                     if (formKey.currentState!.validate()) {
-                      signInWithGoogle();
+                      try {
+                        final GoogleSignInAccount? googleSignInAccount =
+                            await _googleSignIn.signIn();
+                        if (googleSignInAccount != null) {
+                          final GoogleSignInAuthentication
+                              googleSignInAuthentication =
+                              await googleSignInAccount.authentication;
+                          final AuthCredential credential =
+                              GoogleAuthProvider.credential(
+                            accessToken: googleSignInAuthentication.accessToken,
+                            idToken: googleSignInAuthentication.idToken,
+                          );
+                          final UserCredential userCredential =
+                              await auth.signInWithCredential(credential);
+                          final User? user = userCredential.user;
+
+                          if (user != null) {
+                            // Save additional user data to Firestore
+                            await saveUserData(user.uid, user.email!,
+                                userContact, storeName, userAddress);
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => btmNavBar()),
+                            );
+                          }
+                        }
+                      } catch (e) {}
                     }
                   },
                   btntxt: 'Sign Up With Google',

@@ -27,59 +27,104 @@ class LowOpacityText extends StatelessWidget {
 }
 
 class ImageAdd extends StatefulWidget {
-  const ImageAdd({super.key});
+  final Function(File) onImageSelected;
+  final Function(int) onImageRemoved;
+  final List<File> selectedImages;
+
+  const ImageAdd({
+    Key? key,
+    required this.onImageSelected,
+    required this.onImageRemoved,
+    required this.selectedImages,
+  }) : super(key: key);
 
   @override
   State<ImageAdd> createState() => _ImageAddState();
 }
 
 class _ImageAddState extends State<ImageAdd> {
-  File? SelectedImage;
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedImage != null) {
+      widget.onImageSelected(File(pickedImage.path));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    Future<void> pickImage() async {
-      final picker = ImagePicker();
-      final pickedImage = await picker.pickImage(source: ImageSource.gallery);
-      if (pickedImage != null) {
-        setState(() {
-          SelectedImage = File(pickedImage.path);
-        });
-      }
-    }
-
     Size size = MediaQuery.of(context).size;
-    return Container(
-      width: size.width * .29,
-      height: size.height * .13,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            offset: const Offset(
-              1,
-              4.0,
-            ),
-            blurRadius: 9.0,
-            spreadRadius: 0.0,
-          ), //BoxShadow
-        ],
-      ),
-      child: TextButton(
-        style: ButtonStyle(
-          splashFactory: InkRipple.splashFactory,
-          overlayColor: MaterialStateColor.resolveWith((states) => primaryBlue),
-        ),
-        onPressed: () {
-          pickImage();
-        },
-        child: SelectedImage != null
-            ? Image.file(SelectedImage!)
-            : SvgPicture.asset(
-                'assets/images/addCategory.svg',
-                width: size.width * 0.3,
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          for (int i = 0; i < widget.selectedImages.length; i++)
+            Container(
+              margin: EdgeInsets.only(right: 10),
+              width: size.width * .29,
+              height: size.height * .13,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    offset: const Offset(1, 4.0),
+                    blurRadius: 9.0,
+                    spreadRadius: 0.0,
+                  ),
+                ],
               ),
+              child: Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  Image.file(
+                    widget.selectedImages[i],
+                    width: size.width * 0.29,
+                    height: size.height * 0.13,
+                    fit: BoxFit.cover,
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      widget.onImageRemoved(i);
+                    },
+                    icon: Icon(Icons.close, color: Colors.red),
+                  ),
+                ],
+              ),
+            ),
+          if (widget.selectedImages.length < 5)
+            Container(
+              width: size.width * .29,
+              height: size.height * .13,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    offset: const Offset(1, 4.0),
+                    blurRadius: 9.0,
+                    spreadRadius: 0.0,
+                  ),
+                ],
+              ),
+              child: TextButton(
+                style: ButtonStyle(
+                  splashFactory: InkRipple.splashFactory,
+                  overlayColor:
+                      MaterialStateColor.resolveWith((states) => primaryBlue),
+                ),
+                onPressed: () {
+                  pickImage();
+                },
+                child: SvgPicture.asset(
+                  'assets/images/addCategory.svg',
+                  width: size.width * 0.3,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -87,6 +132,9 @@ class _ImageAddState extends State<ImageAdd> {
 
 ////////////////////////PRODUCT INFO Area//////////////////////////////
 class ProductInfo extends StatefulWidget {
+  final TextEditingController titlecontroller;
+  final TextEditingController quantitycontroller;
+  final TextEditingController pricecontroller;
   final String title;
   final String price;
   final String quantity;
@@ -95,7 +143,10 @@ class ProductInfo extends StatefulWidget {
       {super.key,
       required this.title,
       required this.price,
-      required this.quantity});
+      required this.quantity,
+      required this.titlecontroller,
+      required this.pricecontroller,
+      required this.quantitycontroller});
 
   @override
   State<ProductInfo> createState() => _ProductInfoState();
@@ -131,6 +182,7 @@ class _ProductInfoState extends State<ProductInfo> {
           child: Column(
             children: [
               TextFormField(
+                controller: widget.titlecontroller,
                 decoration: InputDecoration(
                   hintText: title,
                   border: InputBorder.none,
@@ -139,6 +191,7 @@ class _ProductInfoState extends State<ProductInfo> {
                 ),
               ),
               TextFormField(
+                controller: widget.pricecontroller,
                 keyboardType: const TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
                   hintText: quantity,
@@ -149,6 +202,7 @@ class _ProductInfoState extends State<ProductInfo> {
                 ),
               ),
               TextFormField(
+                controller: widget.quantitycontroller,
                 keyboardType: const TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
                   hintText: price,
@@ -294,7 +348,8 @@ class _RadioButtonState extends State<RadioButton> {
 /////////////////////////About product SECTION//////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 class Description extends StatelessWidget {
-  const Description({super.key});
+  final TextEditingController descriptioncontroller;
+  const Description({super.key, required this.descriptioncontroller});
 
   @override
   Widget build(BuildContext context) {
@@ -309,6 +364,7 @@ class Description extends StatelessWidget {
           horizontal: size.width * 0.04,
         ),
         child: TextField(
+          controller: descriptioncontroller,
           maxLines: null,
           decoration: InputDecoration(
             hintText: 'Description',

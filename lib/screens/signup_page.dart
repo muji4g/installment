@@ -193,17 +193,6 @@ class _SignUpAppState extends State<SignUpApp> {
                 SizedBox(
                   height: size.height * .01,
                 ),
-                Text(
-                  'or',
-                  style: customTextgrey.copyWith(fontSize: size.width * 0.03),
-                ),
-                SizedBox(
-                  height: size.height * .01,
-                ),
-                SecondayBtn(
-                  onPressed: () {},
-                  btntxt: 'Sign Up With Google',
-                ),
               ],
             ),
           ),
