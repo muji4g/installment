@@ -23,6 +23,7 @@ class _TermsConditionsState extends State<TermsConditions> {
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(75),
           child: AppBarSecondary(
+              showLeading: true,
               showMenu: false,
               isarrowLeading: false,
               onPressed: () {

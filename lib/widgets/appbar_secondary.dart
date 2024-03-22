@@ -10,19 +10,22 @@ class AppBarSecondary extends StatelessWidget {
 
   final bool isarrowLeading;
   final bool showMenu;
+  final bool showLeading;
   final VoidCallback onPressed;
   const AppBarSecondary(
       {super.key,
       required this.showMenu,
       required this.isarrowLeading,
       required this.onPressed,
-      required this.title});
+      required this.title,
+      required this.showLeading});
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return AppBar(
       scrolledUnderElevation: 0.0,
+      automaticallyImplyLeading: showLeading,
       elevation: 0.0,
       backgroundColor: bgColor,
       title: Text(
@@ -31,21 +34,23 @@ class AppBarSecondary extends StatelessWidget {
             fontSize: size.width * 0.05, fontWeight: FontWeight.bold),
       ),
       centerTitle: true,
-      leading: isarrowLeading
-          ? IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: onPressed,
-            )
-          : IconButton(
-              icon: IconButton(
-                icon: const Icon(
-                  FontAwesomeIcons.x,
-                  size: 16,
-                ),
-                onPressed: onPressed,
-              ),
-              onPressed: onPressed,
-            ),
+      leading: showLeading
+          ? isarrowLeading
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: onPressed,
+                )
+              : IconButton(
+                  icon: IconButton(
+                    icon: const Icon(
+                      FontAwesomeIcons.x,
+                      size: 16,
+                    ),
+                    onPressed: onPressed,
+                  ),
+                  onPressed: onPressed,
+                )
+          : null,
       actions: showMenu
           ? [
               Padding(

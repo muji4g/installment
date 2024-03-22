@@ -20,6 +20,7 @@ import 'package:installement1_app/widgets/FormFields.dart';
 import 'package:installement1_app/widgets/bottomNavigationBar.dart';
 import 'package:installement1_app/widgets/buttons.dart';
 import 'package:installement1_app/widgets/large_strings.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class LoginApp extends StatefulWidget {
   const LoginApp({super.key});
@@ -38,6 +39,7 @@ class _LoginAppState extends State<LoginApp> {
   TextEditingController resetPassController = TextEditingController();
   final auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  bool isLogin = true;
 
 /////////////////////////////////////////////////////////////
   //////////Function for Google SIGN IN/////////////////////
@@ -323,46 +325,73 @@ class _LoginAppState extends State<LoginApp> {
               SizedBox(
                 height: size.width * 0.05,
               ),
-              PrimaryBtn(
-                btntxt: 'SignIn',
-                width: size.width * 0.9,
-                onPressedFunction: () async {
-                  var loginEmail = controllerEmail.text.trim();
-                  var loginPassword = controllerPassword.text.trim();
-                  if (loginPassword.isNotEmpty && loginEmail.isNotEmpty) {
-                    try {
-                      final User? firebaseUser = (await FirebaseAuth.instance
-                              .signInWithEmailAndPassword(
-                                  email: loginEmail, password: loginPassword))
-                          .user;
-                      if (firebaseUser != null) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const btmNavBar()));
-                        emailController.clear();
-                        passwordController.clear();
-                      }
-                    } on FirebaseAuthException catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          behavior: SnackBarBehavior.floating,
-                          backgroundColor: Colors.red,
-                          content: e.code == 'invalid-email'
-                              ? Text('Enter A Valid Email!')
-                              : e.code == 'invalid-credential'
-                                  ? Text(
-                                      'The Email or Password are not correct')
-                                  : Text('Unknown Error Try Again Later!')));
-                    }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      behavior: SnackBarBehavior.floating,
-                      backgroundColor: Colors.red,
-                      content: Text('Enter an Email OR Password'),
-                    ));
-                  }
-                },
-              ),
+              isLoading
+                  ? Center(
+                      child: SpinKitDualRing(
+                        lineWidth: 2,
+                        color: primaryBlue,
+                        size: 40,
+                      ),
+                    )
+                  : PrimaryBtn(
+                      btntxt: 'SignIn',
+                      width: size.width * 0.9,
+                      onPressedFunction: () async {
+                        // Set isLoading to true before initiating sign-in process
+                        setState(() {
+                          isLoading = true;
+                        });
+
+                        var loginEmail = controllerEmail.text.trim();
+                        var loginPassword = controllerPassword.text.trim();
+                        if (loginPassword.isNotEmpty && loginEmail.isNotEmpty) {
+                          try {
+                            final User? firebaseUser = (await FirebaseAuth
+                                    .instance
+                                    .signInWithEmailAndPassword(
+                                        email: loginEmail,
+                                        password: loginPassword))
+                                .user;
+                            if (firebaseUser != null) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const btmNavBar()));
+                              emailController.clear();
+                              passwordController.clear();
+                            }
+                          } on FirebaseAuthException catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.red,
+                                content: e.code == 'invalid-email'
+                                    ? Text('Enter A Valid Email!')
+                                    : e.code == 'invalid-credential'
+                                        ? Text(
+                                            'The Email or Password are not correct')
+                                        : Text(
+                                            'Unknown Error Try Again Later!')));
+
+                            // Set isLoading back to false after sign-in process completes
+                            setState(() {
+                              isLoading = false;
+                            });
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            behavior: SnackBarBehavior.floating,
+                            backgroundColor: Colors.red,
+                            content: Text('Enter an Email OR Password'),
+                          ));
+
+                          // Set isLoading back to false after sign-in process completes
+                          setState(() {
+                            isLoading = false;
+                          });
+                        }
+                      },
+                    ),
               SizedBox(
                 height: size.width * 0.05,
               ),

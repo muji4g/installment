@@ -47,6 +47,7 @@ class _PaidPaymentState extends State<PaidPayment> {
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
             child: AppBarSecondary(
+                showLeading: true,
                 showMenu: true,
                 onPressed: () {
                   Navigator.pop(context);

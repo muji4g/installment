@@ -28,6 +28,7 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(75),
           child: AppBarSecondary(
+              showLeading: true,
               showMenu: false,
               isarrowLeading: false,
               onPressed: () {

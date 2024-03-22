@@ -18,6 +18,7 @@ class CategoriesScreen extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
           child: AppBarSecondary(
+              showLeading: true,
               showMenu: false,
               onPressed: () {
                 Navigator.pop(context);

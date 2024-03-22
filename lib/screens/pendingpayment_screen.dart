@@ -28,6 +28,7 @@ class _PendingPaymentsState extends State<PendingPayments> {
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(75),
           child: AppBarSecondary(
+              showLeading: true,
               showMenu: true,
               isarrowLeading: true,
               onPressed: () {

@@ -22,6 +22,7 @@ class _ProductDetailsState extends State<ProductDetails> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(75),
         child: AppBarSecondary(
+            showLeading: true,
             showMenu: true,
             isarrowLeading: true,
             onPressed: () {

@@ -107,6 +107,7 @@ class _UserSettings extends State<UserSettings> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(75),
         child: AppBarSecondary(
+            showLeading: true,
             showMenu: false,
             isarrowLeading: true,
             onPressed: () {

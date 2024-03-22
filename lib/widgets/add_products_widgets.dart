@@ -216,44 +216,6 @@ class _ProductInfoState extends State<ProductInfo> {
         ));
   }
 }
-/////////////////////////////////////////////
-//////Installment Plan Section//////////////
-///////////////////////////////////////////
-
-class InstallmentPlanSection extends StatelessWidget {
-  const InstallmentPlanSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // Size size = MediaQuery.of(context).size;
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            offset: const Offset(
-              1,
-              4.0,
-            ),
-            blurRadius: 9.0,
-            spreadRadius: 0.0,
-          ), //BoxShadow
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const BluebgContainer(),
-            RadioButton(),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 ///reuseble blue background Container/////
 class BluebgContainer extends StatelessWidget {
@@ -285,59 +247,6 @@ class BluebgContainer extends StatelessWidget {
                   color: primaryBlue.withOpacity(0.7)),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-//////////////////////////////////
-/////Re use able Radio Button////
-////////////////////////////////
-class RadioButton extends StatefulWidget {
-  // final num val;
-
-  RadioButton({
-    super.key,
-  });
-
-  @override
-  State<RadioButton> createState() => _RadioButtonState();
-}
-
-class _RadioButtonState extends State<RadioButton> {
-  String? selectedValue = 'value';
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    // String? selectedValue =
-    //     'value'; // Initialize with the index of the initially selected radio button (if any)
-
-    return SizedBox(
-      height: size.height * 0.2,
-      child: ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: installments[1].installmentPlan.length,
-        itemBuilder: (context, index) => ListTile(
-          title: Row(
-            children: [
-              Text(installments[1].installmentPlan[index]),
-              SizedBox(width: size.width * 0.01),
-              Text(installments[2].installemtnPlanwords[0]),
-            ],
-          ),
-          leading: Radio(
-            value: installments[1].installmentPlan[index],
-            groupValue:
-                selectedValue, // Use selectedValue as the consistent groupValue
-            onChanged: (value) {
-              setState(() {
-                selectedValue = value;
-                // Cast value to int explicitly
-              });
-            },
-            activeColor: primaryBlue,
-          ),
         ),
       ),
     );

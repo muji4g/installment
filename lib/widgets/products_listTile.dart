@@ -22,7 +22,9 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
 class CategoryList extends StatefulWidget {
-  const CategoryList({Key? key}) : super(key: key);
+  const CategoryList({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<CategoryList> createState() => _CategoryListState();
@@ -41,7 +43,6 @@ class _CategoryListState extends State<CategoryList> {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          // Extracting categories from the snapshot
           List<Category> categories = snapshot.data!.docs
               .map((doc) => Category.fromSnapshot(doc))
               .toList();
@@ -95,26 +96,23 @@ class _CategoryListState extends State<CategoryList> {
   }
 
   Future<void> _showAddCategoryBottomSheet(BuildContext context) async {
+    File? selectedImage;
+
     Size size = MediaQuery.of(context).size;
     User? user = FirebaseAuth.instance.currentUser;
     TextEditingController titleController = TextEditingController();
-    XFile? imageFile;
-    Future<void> _pickImageFromGallery() async {
-      XFile? pickedFile =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
-      setState(() {
-        imageFile = pickedFile;
-      });
+
+    Future<void> pickImage() async {
+      final picker = ImagePicker();
+      final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedImage != null) {
+        setState(() {
+          selectedImage = File(pickedImage.path);
+        });
+      }
     }
 
     // Function to handle image selection from camera
-    Future<void> _pickImageFromCamera() async {
-      XFile? pickedFile =
-          await ImagePicker().pickImage(source: ImageSource.camera);
-      setState(() {
-        imageFile = pickedFile;
-      });
-    }
 
     if (user != null) {
       await showModalBottomSheet(
@@ -142,23 +140,19 @@ class _CategoryListState extends State<CategoryList> {
                     width: size.width * 0.8,
                     height: size.height * 0.25,
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        pickImage();
+                      },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            FontAwesomeIcons.image,
-                            size: size.width * 0.1,
-                            color: Color(0xffC2C2C2),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Upload Image',
-                              style: customTextgrey.copyWith(
-                                  fontSize: size.width * 0.03),
-                            ),
-                          )
+                          selectedImage != null
+                              ? Image.file(
+                                  selectedImage!,
+                                  fit: BoxFit.contain,
+                                )
+                              : Icon(Icons.image),
+                          Text('Upload An Image'),
                         ],
                       ),
                     ),
@@ -171,12 +165,17 @@ class _CategoryListState extends State<CategoryList> {
                   BottomSheetButton(
                       btntxt: 'Add',
                       onPressed: () async {
-                        await FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(user.uid)
-                            .collection('categories')
-                            .add({
+                        DocumentReference<Map<String, dynamic>> docRef =
+                            FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(user.uid)
+                                .collection('categories')
+                                .doc();
+
+                        await docRef.set({
                           'title': titleController.text,
+                          'categoryID': docRef.id,
+                          'Date Added': DateTime.now(),
                         });
                         Navigator.pop(context);
                       },

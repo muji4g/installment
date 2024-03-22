@@ -76,6 +76,7 @@ class _AddCustomerState extends State<AddCustomer> {
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(75),
           child: AppBarSecondary(
+              showLeading: true,
               showMenu: false,
               isarrowLeading: false,
               onPressed: () {
