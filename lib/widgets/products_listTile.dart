@@ -2,14 +2,10 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:installement1_app/model/products_model.dart';
+
 import 'package:installement1_app/screens/product_details.dart';
 
 import 'package:installement1_app/theme/TextStyle.dart';
@@ -20,10 +16,14 @@ import 'package:installement1_app/widgets/buttons.dart';
 import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
+// final CategorySelectedCallback onCategorySelected;
+// required this.onCategorySelected,
 
 class CategoryList extends StatefulWidget {
+  final Function(String) onCategorySelected;
   const CategoryList({
     Key? key,
+    required this.onCategorySelected,
   }) : super(key: key);
 
   @override
@@ -33,7 +33,6 @@ class CategoryList extends StatefulWidget {
 class _CategoryListState extends State<CategoryList> {
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     User? user = FirebaseAuth.instance.currentUser;
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -50,19 +49,23 @@ class _CategoryListState extends State<CategoryList> {
             height: 100,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: categories.length +
-                  2, // Additional 2 for 'All' and 'Add' categories
+              itemCount: categories.length + 2,
               itemBuilder: (context, index) {
                 if (index == 0) {
-                  return _buildCategoryWidget(Icons.image, 'All', () {});
-                } else if (index == 1) {
                   return _buildCategoryWidget(Icons.add, 'Add', () {
                     _showAddCategoryBottomSheet(context);
                   });
+                } else if (index == 1) {
+                  return _buildCategoryWidget(Icons.image, 'All', () {
+                    widget.onCategorySelected('');
+                    print('onTap Called');
+                  });
                 } else {
                   Category category = categories[index - 2];
-                  return _buildCategoryWidget(
-                      Icons.image, category.title, () {});
+                  return _buildCategoryWidget(Icons.image, category.title, () {
+                    widget.onCategorySelected(category.categoryID);
+                    print('onTap Called');
+                  });
                 }
               },
             ),
@@ -193,10 +196,13 @@ class _CategoryListState extends State<CategoryList> {
 
 class Category {
   final String title;
+  final String categoryID;
 
-  Category(this.title);
+  Category(this.title, this.categoryID);
 
-  Category.fromSnapshot(DocumentSnapshot snapshot) : title = snapshot['title'];
+  Category.fromSnapshot(DocumentSnapshot snapshot)
+      : title = snapshot['title'],
+        categoryID = snapshot['categoryID'];
 }
 
 ///////////////////////////////
@@ -204,7 +210,10 @@ class Category {
 /////PRODUCT GRIDS//////////
 ///////////////////
 class ProductGrid extends StatefulWidget {
-  const ProductGrid({super.key});
+  final String selectedCategory; // Selected category
+
+  const ProductGrid({Key? key, required this.selectedCategory})
+      : super(key: key);
 
   @override
   State<ProductGrid> createState() => _ProductGridState();
@@ -216,35 +225,46 @@ class _ProductGridState extends State<ProductGrid> {
   String productQuantity = '';
   String productPrice = '';
 
+  @override
   void initState() {
     super.initState();
     fetchProductDetails();
-    // TODO: implement initState
-    setState(() {});
   }
 
   void fetchProductDetails() async {
-    int index;
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
-          .instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('products')
-          .get();
+      QuerySnapshot<Map<String, dynamic>> snapshot;
+      if (widget.selectedCategory.isNotEmpty) {
+        print('111111????? ${widget.selectedCategory}');
+        snapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('products')
+            .where('selectedCategory', isEqualTo: widget.selectedCategory)
+            .get();
+      } else {
+        print('______________________________ ${widget.selectedCategory}');
+
+        snapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('products')
+            .get();
+      }
 
       if (snapshot.size > 0) {
         setState(() {
           productsList = snapshot.docs.map((doc) => doc.data()).toList();
         });
-        Map<String, dynamic> productData = snapshot.docs[0].data();
-        productTitle = productData['title'];
 
+        Map<String, dynamic> productData = snapshot.docs[1].data();
+        productTitle = productData['title'];
         productPrice = productData['price'];
         productQuantity = productData['quantity'];
-
         setState(() {});
+      } else {
+        print('else');
       }
     }
   }
@@ -252,6 +272,7 @@ class _ProductGridState extends State<ProductGrid> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    print('listtt ${widget.selectedCategory}');
     return Expanded(
       child: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

@@ -138,10 +138,12 @@ class ProductInfo extends StatefulWidget {
   final String title;
   final String price;
   final String quantity;
+  final formKey;
 
   const ProductInfo(
       {super.key,
       required this.title,
+      required this.formKey,
       required this.price,
       required this.quantity,
       required this.titlecontroller,
@@ -181,36 +183,42 @@ class _ProductInfoState extends State<ProductInfo> {
               horizontal: size.width * 0.05, vertical: size.height * 0.015),
           child: Column(
             children: [
-              TextFormField(
-                controller: widget.titlecontroller,
-                decoration: InputDecoration(
-                  hintText: title,
-                  border: InputBorder.none,
-                  hintStyle:
-                      customTextgrey.copyWith(fontSize: size.width * 0.035),
-                ),
-              ),
-              TextFormField(
-                controller: widget.pricecontroller,
-                keyboardType: const TextInputType.numberWithOptions(),
-                decoration: InputDecoration(
-                  hintText: quantity,
-                  border: InputBorder.none,
-                  hintStyle: customTextgrey.copyWith(
-                    fontSize: size.width * 0.035,
-                  ),
-                ),
-              ),
-              TextFormField(
-                controller: widget.quantitycontroller,
-                keyboardType: const TextInputType.numberWithOptions(),
-                decoration: InputDecoration(
-                  hintText: price,
-                  border: InputBorder.none,
-                  hintStyle:
-                      customTextgrey.copyWith(fontSize: size.width * 0.035),
-                ),
-              ),
+              Form(
+                  key: widget.formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: widget.titlecontroller,
+                        decoration: InputDecoration(
+                          hintText: title,
+                          border: InputBorder.none,
+                          hintStyle: customTextgrey.copyWith(
+                              fontSize: size.width * 0.035),
+                        ),
+                      ),
+                      TextFormField(
+                        controller: widget.pricecontroller,
+                        keyboardType: const TextInputType.numberWithOptions(),
+                        decoration: InputDecoration(
+                          hintText: quantity,
+                          border: InputBorder.none,
+                          hintStyle: customTextgrey.copyWith(
+                            fontSize: size.width * 0.035,
+                          ),
+                        ),
+                      ),
+                      TextFormField(
+                        controller: widget.quantitycontroller,
+                        keyboardType: const TextInputType.numberWithOptions(),
+                        decoration: InputDecoration(
+                          hintText: price,
+                          border: InputBorder.none,
+                          hintStyle: customTextgrey.copyWith(
+                              fontSize: size.width * 0.035),
+                        ),
+                      ),
+                    ],
+                  ))
             ],
           ),
         ));

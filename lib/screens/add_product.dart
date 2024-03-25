@@ -1,8 +1,11 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:installement1_app/screens/installmentpage_section.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
 
@@ -30,6 +33,17 @@ class _AddProductState extends State<AddProduct> {
   final TextEditingController quantityController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController decriptionController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+
+  // getproductId() {
+  //   User? user = FirebaseAuth.instance.currentUser;
+  //   CollectionReference products = FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(user!.uid)
+  //       .collection('products');
+  //   String productID = products.id;
+  //   return productID;
+  // }
 
   Future<void> fetchCategories() async {
     String userId = FirebaseAuth.instance.currentUser!.uid;
@@ -59,10 +73,67 @@ class _AddProductState extends State<AddProduct> {
         .doc(userId)
         .update({'selectedCategory': selectedCategory});
 
-    // upadtes the dropdown ui
+    // upadtes the dropdown value to the selected value
     setState(() {
       _selectedCategory = selectedCategory;
     });
+  }
+
+  void addProductToFirestore(BuildContext context) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    try {
+      CollectionReference products = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .collection('products');
+
+      // Generate a document ID for the product
+      var newProductRef = await products.add({
+        'title': titleController.text,
+        'price': priceController.text,
+        'quantity': quantityController.text,
+        'description': decriptionController.text,
+        'images': '',
+        'selectedCategory': _selectedCategory,
+        'Date Added On': DateTime.now()
+      });
+
+      // Retrieve the generated document ID
+      String productId = newProductRef.id;
+
+      // Clear form fields and selected images
+      titleController.clear();
+      priceController.clear();
+      quantityController.clear();
+      decriptionController.clear();
+      setState(() {
+        selectedImages.clear();
+      });
+
+      // Navigate to InstallmentPlan screen with the generated product ID
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => InstallmentPlan(productId: productId)),
+      );
+
+      // Show a snackbar indicating success
+      final snackBar = SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text('Product added'),
+        backgroundColor: Colors.green,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } catch (e) {
+      print('$e');
+      // Show a snackbar indicating failure
+      final snackBar = SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text('Failed to add product'),
+        backgroundColor: Colors.red,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 
   void addSelectedImage(File image) {
@@ -75,34 +146,6 @@ class _AddProductState extends State<AddProduct> {
     setState(() {
       selectedImages.removeAt(index);
     });
-  }
-
-  void addProductToFirestore() {
-    User? user = FirebaseAuth.instance.currentUser;
-    try {
-      CollectionReference products = FirebaseFirestore.instance
-          .collection('users')
-          .doc(user!.uid)
-          .collection('products');
-      Map<String, dynamic> productData = {
-        'title': titleController.text,
-        'price': priceController.text,
-        'quantity': quantityController.text,
-        'description': decriptionController.text,
-        'images': '',
-        'selectedCategory': _selectedCategory,
-      };
-      products.add(productData);
-      titleController.clear();
-      priceController.clear();
-      quantityController.clear();
-      decriptionController.clear();
-      setState(() {
-        selectedImages.clear();
-      });
-    } catch (e) {
-      print('$e');
-    }
   }
 
   @override
@@ -121,20 +164,9 @@ class _AddProductState extends State<AddProduct> {
           child: PrimaryBtn(
               btntxt: 'Add Product',
               onPressedFunction: () {
-                addProductToFirestore();
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => InstallmentPlan(
-                              productId: productData.id,
-                            )));
-                final snackBar = SnackBar(
-                  behavior: SnackBarBehavior.floating,
-                  content: Text('Product added'),
-                  backgroundColor: Colors.green,
-                );
-
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                if (formKey.currentState!.validate()) {
+                  addProductToFirestore(context);
+                }
               },
               width: size.width * 0.15),
         ),
@@ -175,32 +207,60 @@ class _AddProductState extends State<AddProduct> {
                 SizedBox(
                   height: size.height * 0.03,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const LowOpacityText(text: 'Select Category'),
-                    DropdownButton<String>(
-                      style: customTextblack.copyWith(fontSize: 14),
-                      value: _selectedCategory,
-                      hint: Text(
-                        'Select Product Category',
-                        style: customTextgrey.copyWith(fontSize: 12),
-                      ),
-                      onChanged: (String? newValue) {
-                        if (newValue != null) {
-                          // Update the selected category
-                          updateSelectedCategory(newValue);
-                        }
-                      },
-                      items: _categories.entries.map<DropdownMenuItem<String>>(
-                          (MapEntry<String, String> entry) {
-                        return DropdownMenuItem<String>(
-                          value: entry.key,
-                          child: Text(entry.value),
-                        );
-                      }).toList(),
-                    )
-                  ],
+                const LowOpacityText(text: 'Select Category'),
+                Container(
+                  height: size.height * 0.1,
+                  width: size.width * 0.9,
+                  decoration: BoxDecoration(
+                      color: white,
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          offset: const Offset(
+                            1,
+                            4.0,
+                          ),
+                          blurRadius: 9.0,
+                          spreadRadius: 0.0,
+                        ),
+                      ]),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                        vertical: size.height * 0.007,
+                        horizontal: size.width * 0.007),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        DropdownButton<String>(
+                          dropdownColor: white,
+                          elevation: 1,
+                          borderRadius: BorderRadius.circular(18),
+                          style: customTextblack.copyWith(fontSize: 14),
+                          value: _selectedCategory,
+                          hint: Text(
+                            'Select Product Category',
+                            style: customTextgrey.copyWith(fontSize: 12),
+                          ),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              // Update the selected category
+                              updateSelectedCategory(newValue);
+                            }
+                          },
+                          items: _categories.entries
+                              .map<DropdownMenuItem<String>>(
+                                  (MapEntry<String, String> entry) {
+                            return DropdownMenuItem<String>(
+                              value: entry.key,
+                              child: Text(entry.value),
+                            );
+                          }).toList(),
+                        )
+                      ],
+                    ),
+                  ),
                 ),
                 SizedBox(
                   height: size.height * 0.04,
@@ -210,6 +270,7 @@ class _AddProductState extends State<AddProduct> {
                   height: size.height * 0.011,
                 ),
                 ProductInfo(
+                  formKey: formKey,
                   titlecontroller: titleController,
                   pricecontroller: priceController,
                   quantitycontroller: quantityController,

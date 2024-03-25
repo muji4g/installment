@@ -353,10 +353,12 @@ class _LoginAppState extends State<LoginApp> {
                                         password: loginPassword))
                                 .user;
                             if (firebaseUser != null) {
-                              Navigator.push(
+                              Navigator.of(context).pop();
+                              Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const btmNavBar()));
+                                      builder: (context) => btmNavBar()),
+                                  (route) => route.isFirst);
                               emailController.clear();
                               passwordController.clear();
                             }

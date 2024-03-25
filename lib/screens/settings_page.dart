@@ -15,43 +15,49 @@ class _SettingspageState extends State<Settingspage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: bgColor,
-      appBar: PreferredSize(
-          preferredSize: Size.fromHeight(75),
-          child: Padding(
-            padding:
-                EdgeInsets.only(top: size.width * 0.011, left: 12, right: 12),
-            child: appBar(
-              onPressedFunction: () {},
-              title: 'Settings',
-              addIcon: false,
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (didPop) {
+        Navigator.pop(context);
+      },
+      child: Scaffold(
+        backgroundColor: bgColor,
+        appBar: PreferredSize(
+            preferredSize: Size.fromHeight(75),
+            child: Padding(
+              padding:
+                  EdgeInsets.only(top: size.width * 0.011, left: 12, right: 12),
+              child: appBar(
+                onPressedFunction: () {},
+                title: 'Settings',
+                addIcon: false,
+              ),
+            )),
+        body: Column(
+          children: [
+            SizedBox(
+              height: size.height * 0.06,
             ),
-          )),
-      body: Column(
-        children: [
-          SizedBox(
-            height: size.height * 0.06,
-          ),
-          Center(
-            child: Column(
-              children: [
-                Image.asset('assets/images/settingsProfile.png'),
-                SizedBox(
-                  height: size.width * 0.025,
-                ),
-                Text(
-                  'John Wick',
-                  style: customTextblue.copyWith(fontSize: size.width * 0.04),
-                )
-              ],
+            Center(
+              child: Column(
+                children: [
+                  Image.asset('assets/images/settingsProfile.png'),
+                  SizedBox(
+                    height: size.width * 0.025,
+                  ),
+                  Text(
+                    'John Wick',
+                    style: customTextblue.copyWith(fontSize: size.width * 0.04),
+                  )
+                ],
+              ),
             ),
-          ),
-          SizedBox(
-            height: size.height * 0.13,
-          ),
-          SettingsView(),
-        ],
+            SizedBox(
+              height: size.height * 0.13,
+            ),
+            SettingsView(),
+          ],
+        ),
       ),
     );
   }
