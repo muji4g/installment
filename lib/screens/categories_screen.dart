@@ -32,7 +32,8 @@ class CategoriesScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AppSearchBar(
+            AppSearchBar(
+              onChanged: (value) {},
               hintText: 'Search Category',
             ),
             SizedBox(
@@ -49,7 +50,7 @@ class CategoriesScreen extends StatelessWidget {
             SizedBox(
               height: size.height * 0.015,
             ),
-            CategoriesList(onPressedFunction: () {})
+            CategoriesList()
           ],
         ),
       ),

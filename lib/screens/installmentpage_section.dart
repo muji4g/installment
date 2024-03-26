@@ -96,66 +96,60 @@ class _InstallmentPlanState extends State<InstallmentPlan> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return PopScope(
-      canPop: true,
-      onPopInvoked: (didPop) {
-        Navigator.pop(context);
-      },
-      child: Scaffold(
-        backgroundColor: bgColor,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(75),
-          child: AppBarSecondary(
-              showLeading: false,
-              showMenu: false,
-              isarrowLeading: false,
-              onPressed: () {},
-              title: 'Installments Plan'),
-        ),
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: size.width * 0.06),
-          child: Column(
-            children: [
-              TextFormField(
-                style: customTextblack.copyWith(fontSize: size.width * 0.03),
-                controller: planNameController,
-                decoration: const InputDecoration(
-                    hintText: 'Name of Installment Plan',
-                    contentPadding: EdgeInsets.all(0)),
-              ),
-              TextFormField(
-                style: customTextblack.copyWith(fontSize: size.width * 0.03),
-                controller: monthsController,
-                decoration: const InputDecoration(
-                    hintText: 'Months', contentPadding: EdgeInsets.all(0)),
-              ),
-              ReUseableTextForm(
-                controller: downPaymentController,
-                hinttxt: 'DownPayment',
-              ),
-              ReUseableTextForm(
-                controller: monthlyInsController,
-                hinttxt: 'Monthly Installment',
-              ),
-              SizedBox(
-                height: size.height * 0.05,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [GreyText(text: 'TOTAL'), Text(total.toString())],
-              ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: PrimaryBtn(
-                    btntxt: 'Add Installment',
-                    onPressedFunction: () {
-                      _addInstallment();
-                    },
-                    width: size.width * 0.8),
-              ),
-            ],
-          ),
+    return Scaffold(
+      backgroundColor: bgColor,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(75),
+        child: AppBarSecondary(
+            showLeading: false,
+            showMenu: false,
+            isarrowLeading: false,
+            onPressed: () {},
+            title: 'Installments Plan'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: size.width * 0.06),
+        child: Column(
+          children: [
+            TextFormField(
+              style: customTextblack.copyWith(fontSize: size.width * 0.03),
+              controller: planNameController,
+              decoration: const InputDecoration(
+                  hintText: 'Name of Installment Plan',
+                  contentPadding: EdgeInsets.all(0)),
+            ),
+            TextFormField(
+              style: customTextblack.copyWith(fontSize: size.width * 0.03),
+              controller: monthsController,
+              decoration: const InputDecoration(
+                  hintText: 'Months', contentPadding: EdgeInsets.all(0)),
+            ),
+            ReUseableTextForm(
+              controller: downPaymentController,
+              hinttxt: 'DownPayment',
+            ),
+            ReUseableTextForm(
+              controller: monthlyInsController,
+              hinttxt: 'Monthly Installment',
+            ),
+            SizedBox(
+              height: size.height * 0.05,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [GreyText(text: 'TOTAL'), Text(total.toString())],
+            ),
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: PrimaryBtn(
+                  btntxt: 'Add Installment',
+                  onPressedFunction: () {
+                    _addInstallment();
+                  },
+                  width: size.width * 0.8),
+            ),
+          ],
         ),
       ),
     );

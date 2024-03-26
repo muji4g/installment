@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:installement1_app/screens/add_customer.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -46,7 +47,8 @@ class _CustomersScreenState extends State<CustomersScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AppSearchBar(
+            AppSearchBar(
+              onChanged: (value) {},
               hintText: 'Search Customers',
             ),
             Padding(

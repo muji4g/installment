@@ -9,8 +9,6 @@ import 'package:installement1_app/widgets/appbar.dart';
 import 'package:installement1_app/widgets/products_listTile.dart';
 import 'package:installement1_app/widgets/search_bar.dart';
 
-// Import your custom widgets and constants here
-
 class ProductsPage extends StatefulWidget {
   const ProductsPage({Key? key}) : super(key: key);
 
@@ -22,6 +20,7 @@ class _ProductsPageState extends State<ProductsPage> {
   bool _categoriesLoaded = false;
   bool _showAddProduct = false;
   String _selectedCategory = '';
+  var searchText = '';
 
   @override
   void initState() {
@@ -77,7 +76,12 @@ class _ProductsPageState extends State<ProductsPage> {
         padding: EdgeInsets.symmetric(horizontal: size.width * 0.051),
         child: Column(
           children: [
-            const AppSearchBar(
+            AppSearchBar(
+              onChanged: (value) {
+                setState(() {
+                  searchText = value;
+                });
+              },
               hintText: 'Search Products',
             ),
             Padding(
@@ -120,9 +124,7 @@ class _ProductsPageState extends State<ProductsPage> {
             CategoryList(
               onCategorySelected: (category) {
                 setState(() {
-                  print('33333333333333333333  $category');
                   _selectedCategory = category;
-                  print('777777777777777777733333333  $_selectedCategory');
                 });
               },
             ),
@@ -138,25 +140,25 @@ class _ProductsPageState extends State<ProductsPage> {
                   ),
                 ),
               ),
-            if (_showAddProduct) // Show product grid if categories exist
-              Padding(
-                padding: EdgeInsets.only(
-                  right: size.width * 0.63,
-                  bottom: 4,
-                ),
-                child: Opacity(
-                  opacity: 0.4,
-                  child: Text(
-                    'Products',
-                    style: customTextblack.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+            Padding(
+              padding: EdgeInsets.only(
+                right: size.width * 0.63,
+                bottom: 4,
+              ),
+              child: Opacity(
+                opacity: 0.4,
+                child: Text(
+                  'Products',
+                  style: customTextblack.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-            if (_showAddProduct)
-              ProductGrid(selectedCategory: _selectedCategory),
+            ),
+            if (_showAddProduct) // Show product grid if categories exist
+              ProductGrid(
+                  selectedCategory: _selectedCategory, searchText: searchText),
           ],
         ),
       ),

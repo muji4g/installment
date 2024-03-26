@@ -36,7 +36,8 @@ class _PaymentsPageState extends State<PaymentsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AppSearchBar(
+            AppSearchBar(
+              onChanged: (value) {},
               hintText: 'Search Customers',
             ),
             Padding(

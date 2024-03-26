@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -5,8 +7,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
 
 class AppSearchBar extends StatelessWidget {
+  final ValueChanged<String> onChanged;
   final String hintText;
-  const AppSearchBar({super.key, required this.hintText});
+  const AppSearchBar(
+      {super.key, required this.hintText, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +23,7 @@ class AppSearchBar extends StatelessWidget {
       ),
       child: Center(
         child: TextFormField(
+            onChanged: onChanged,
             decoration: InputDecoration(
                 contentPadding: const EdgeInsets.all(12.0),
                 prefixIcon: Padding(
@@ -35,3 +40,5 @@ class AppSearchBar extends StatelessWidget {
     );
   }
 }
+
+//search bar for products

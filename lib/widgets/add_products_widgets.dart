@@ -197,7 +197,7 @@ class _ProductInfoState extends State<ProductInfo> {
                         ),
                       ),
                       TextFormField(
-                        controller: widget.pricecontroller,
+                        controller: widget.quantitycontroller,
                         keyboardType: const TextInputType.numberWithOptions(),
                         decoration: InputDecoration(
                           hintText: quantity,
@@ -208,7 +208,7 @@ class _ProductInfoState extends State<ProductInfo> {
                         ),
                       ),
                       TextFormField(
-                        controller: widget.quantitycontroller,
+                        controller: widget.pricecontroller,
                         keyboardType: const TextInputType.numberWithOptions(),
                         decoration: InputDecoration(
                           hintText: price,
