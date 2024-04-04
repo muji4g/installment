@@ -1,10 +1,16 @@
-// ignore_for_file: prefer_const_declarations
+// ignore_for_file: prefer_const_declarations, prefer_const_constructors
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:installement1_app/screens/add_product.dart';
+import 'package:installement1_app/screens/products_page.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
 import 'package:installement1_app/theme/app_colors.dart';
+import 'package:installement1_app/widgets/add_installment_components.dart';
+import 'package:installement1_app/widgets/addinstallment_bottomsheet.dart';
+import 'package:installement1_app/widgets/appbar.dart';
 import 'package:installement1_app/widgets/appbar_secondary.dart';
 import 'package:installement1_app/widgets/bottomNavigationBar.dart';
 import 'package:installement1_app/widgets/buttons.dart';
@@ -27,16 +33,22 @@ class _InstallmentPlanState extends State<InstallmentPlan> {
   TextEditingController monthsController = TextEditingController();
   TextEditingController downPaymentController = TextEditingController();
   TextEditingController monthlyInsController = TextEditingController();
+  User? user = FirebaseAuth.instance.currentUser;
+  bool isLoading = false;
   double total = 0;
+  final _formKey = GlobalKey<FormState>(); // Add form key
   void _calculateTotal() {
-    // Parse the numerical values from the controllers
-    double months = double.tryParse(monthlyInsController.text) ?? 0;
     double downPayment = double.tryParse(downPaymentController.text) ?? 0;
-
-    // Calculate the total
+    double monthlyInstallment = double.tryParse(monthlyInsController.text) ?? 0;
     setState(() {
-      total = months + downPayment;
-      total;
+      total = downPayment + monthlyInstallment;
+    });
+  }
+
+  bool hasInstallments = false;
+  void toggleInstallments(bool hasInstallments) {
+    setState(() {
+      this.hasInstallments = hasInstallments;
     });
   }
 
@@ -44,11 +56,30 @@ class _InstallmentPlanState extends State<InstallmentPlan> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _calculateTotal();
+  }
+
+  Future<void> _showAddInstallmentBottomSheet(BuildContext context) async {
+    await showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      barrierColor: primaryBlue.withOpacity(0.3),
+      builder: (context) {
+        return AddInstallmentBottomSheet(
+          planController: planNameController,
+          monthsController: monthsController,
+          downPaymentController: downPaymentController,
+          monthlyInstallmentController: monthlyInsController,
+          productId: widget.productId,
+        );
+      },
+    );
   }
 
   ///Function to ADD installment
   void _addInstallment() {
+    setState(() {
+      isLoading = true;
+    });
     //Info to be added
     String planName = planNameController.text;
     String months = monthsController.text;
@@ -74,12 +105,14 @@ class _InstallmentPlanState extends State<InstallmentPlan> {
       'months': months,
       'downPayment': downPayment,
       'monthlyInstallment': monthlyInstallment,
+      'Total': total,
     }).then((value) {
       final snackBar = const SnackBar(
         behavior: SnackBarBehavior.floating,
         content: Text('PLAN ADDED Succesfuly'),
         backgroundColor: Colors.green,
       );
+
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }).catchError((error) {
       // Failed to add installment plan
@@ -89,6 +122,15 @@ class _InstallmentPlanState extends State<InstallmentPlan> {
         backgroundColor: Colors.red,
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }).whenComplete(() {
+      isLoading = false;
+      print('pop');
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => btmNavBar(
+                    initialIndex: 2,
+                  )));
     });
     print('Fucntion called');
   }
@@ -96,60 +138,100 @@ class _InstallmentPlanState extends State<InstallmentPlan> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: bgColor,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(75),
-        child: AppBarSecondary(
-            showLeading: false,
-            showMenu: false,
-            isarrowLeading: false,
-            onPressed: () {},
-            title: 'Installments Plan'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: size.width * 0.06),
-        child: Column(
-          children: [
-            TextFormField(
-              style: customTextblack.copyWith(fontSize: size.width * 0.03),
-              controller: planNameController,
-              decoration: const InputDecoration(
-                  hintText: 'Name of Installment Plan',
-                  contentPadding: EdgeInsets.all(0)),
-            ),
-            TextFormField(
-              style: customTextblack.copyWith(fontSize: size.width * 0.03),
-              controller: monthsController,
-              decoration: const InputDecoration(
-                  hintText: 'Months', contentPadding: EdgeInsets.all(0)),
-            ),
-            ReUseableTextForm(
-              controller: downPaymentController,
-              hinttxt: 'DownPayment',
-            ),
-            ReUseableTextForm(
-              controller: monthlyInsController,
-              hinttxt: 'Monthly Installment',
-            ),
-            SizedBox(
-              height: size.height * 0.05,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [GreyText(text: 'TOTAL'), Text(total.toString())],
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: PrimaryBtn(
-                  btntxt: 'Add Installment',
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Leave this Page?'),
+                content: Text(
+                    'The Product will be Saved without Any Installments Plans'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('No'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  btmNavBar(initialIndex: 2)));
+                    },
+                    child: Text('Yes'),
+                  ),
+                ],
+              );
+            });
+      },
+      child: Scaffold(
+        backgroundColor: bgColor,
+        appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(75),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
+              child: appBar(
+                  title: 'Installments',
+                  addIcon: true,
                   onPressedFunction: () {
-                    _addInstallment();
-                  },
-                  width: size.width * 0.8),
-            ),
-          ],
+                    _showAddInstallmentBottomSheet(context);
+                  }),
+            )),
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: size.width * 0.04),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomGreyText(
+                title: 'Installments',
+              ),
+              InstallmentSection(
+                productId: widget.productId,
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: isLoading
+                    ? const SpinKitDualRing(
+                        color: primaryBlue,
+                        lineWidth: 3,
+                        size: 32,
+                      )
+                    : PrimaryBtn(
+                        btntxt: 'Update',
+                        onPressedFunction: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      btmNavBar(initialIndex: 2)));
+                          final snackBar = const SnackBar(
+                            behavior: SnackBarBehavior.floating,
+                            content: Text('PLAN ADDED Succesfuly'),
+                            backgroundColor: Colors.green,
+                          );
+
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                          setState(() {
+                            isLoading = false;
+                          });
+
+                          downPaymentController.clear();
+                          monthsController.clear();
+                          planNameController.clear();
+                          monthlyInsController.clear();
+                        },
+                        width: size.width * 0.8,
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -159,17 +241,53 @@ class _InstallmentPlanState extends State<InstallmentPlan> {
 class ReUseableTextForm extends StatelessWidget {
   final TextEditingController controller;
   final String hinttxt;
+  final FormFieldValidator<String>? validator;
+  final Function(String)? onChanged;
   const ReUseableTextForm(
-      {super.key, required this.controller, required this.hinttxt});
+      {super.key,
+      required this.controller,
+      required this.hinttxt,
+      required this.onChanged,
+      this.validator});
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
     return TextFormField(
+      onChanged: onChanged,
+      validator: validator,
       style: customTextblack.copyWith(fontSize: size.width * 0.03),
       controller: controller,
       keyboardType: const TextInputType.numberWithOptions(),
+      decoration: InputDecoration(
+          hintText: hinttxt, contentPadding: const EdgeInsets.all(0)),
+    );
+  }
+}
+
+class ReUseableTextFormText extends StatelessWidget {
+  final TextEditingController controller;
+  final String hinttxt;
+  final FormFieldValidator<String>? validator;
+  final Function(String)? onChanged;
+  const ReUseableTextFormText(
+      {super.key,
+      required this.controller,
+      required this.hinttxt,
+      required this.onChanged,
+      this.validator});
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
+    return TextFormField(
+      onChanged: onChanged,
+      validator: validator,
+      style: customTextblack.copyWith(fontSize: size.width * 0.03),
+      controller: controller,
+      keyboardType: TextInputType.multiline,
       decoration: InputDecoration(
           hintText: hinttxt, contentPadding: const EdgeInsets.all(0)),
     );

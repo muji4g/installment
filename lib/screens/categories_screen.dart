@@ -5,9 +5,15 @@ import 'package:installement1_app/widgets/appbar_secondary.dart';
 import 'package:installement1_app/widgets/categories_listtile.dart';
 import 'package:installement1_app/widgets/search_bar.dart';
 
-class CategoriesScreen extends StatelessWidget {
+class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
 
+  @override
+  State<CategoriesScreen> createState() => _CategoriesScreenState();
+}
+
+class _CategoriesScreenState extends State<CategoriesScreen> {
+  var searchText = '';
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -32,9 +38,13 @@ class CategoriesScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AppSearchBar(
-              onChanged: (value) {},
-              hintText: 'Search Category',
+            SearchBarCategories(
+              hintText: 'Search Products',
+              onChanged: (text) {
+                setState(() {
+                  searchText = text;
+                });
+              },
             ),
             SizedBox(
               height: size.height * 0.015,
@@ -50,7 +60,9 @@ class CategoriesScreen extends StatelessWidget {
             SizedBox(
               height: size.height * 0.015,
             ),
-            CategoriesList()
+            CategoriesList(
+              searchText: searchText,
+            )
           ],
         ),
       ),

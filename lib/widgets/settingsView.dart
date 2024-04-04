@@ -7,7 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:installement1_app/screens/login_app.dart';
 import 'package:installement1_app/screens/signup_page.dart';
 import 'package:installement1_app/theme/TextStyle.dart';
-import 'package:installement1_app/usersettings_screen.dart';
+import 'package:installement1_app/widgets/usersettings_screen.dart';
 import 'package:installement1_app/widgets/toggleButton.dart';
 
 class SettingsView extends StatefulWidget {

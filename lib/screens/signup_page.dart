@@ -33,6 +33,8 @@ class _SignUpAppState extends State<SignUpApp> {
   TextEditingController createPassController = TextEditingController();
   TextEditingController confirmPassController = TextEditingController();
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  bool _isHidden = true;
+  bool _isHiddenconfirm = true;
 
   final auth = FirebaseAuth.instance;
   User? currentUser = FirebaseAuth.instance.currentUser;
@@ -66,10 +68,10 @@ class _SignUpAppState extends State<SignUpApp> {
             ),
           ]),
       body: Padding(
-        padding: const EdgeInsets.only(top: 25),
+        padding: const EdgeInsets.only(top: 18),
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
             child: Column(
               // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -77,6 +79,7 @@ class _SignUpAppState extends State<SignUpApp> {
                 Form(
                     key: formKey,
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         FormFields(
                             validatorText: 'Enter Name',
@@ -107,11 +110,25 @@ class _SignUpAppState extends State<SignUpApp> {
                           height: size.height * .01,
                         ),
                         FormFields(
-                            validatorText:
-                                'Enter Your Password atleast 8 digits',
-                            formController: passwordController,
-                            obscuretext: true,
-                            hinttxt: 'Create Password'),
+                            validatorText: 'Enter a Password',
+                            obscuretext: _isHidden,
+                            formController: createPassController,
+                            visibilityIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _isHidden = !_isHidden;
+                                  });
+                                },
+                                icon: _isHidden
+                                    ? const Icon(
+                                        Icons.visibility_off,
+                                        color: Colors.grey,
+                                      )
+                                    : const Icon(
+                                        Icons.visibility,
+                                        color: Colors.grey,
+                                      )),
+                            hinttxt: 'Password'),
                         Padding(
                           padding: const EdgeInsets.all(2.0),
                           child: Text(
@@ -121,9 +138,24 @@ class _SignUpAppState extends State<SignUpApp> {
                           ),
                         ),
                         FormFields(
-                            validatorText: 'Kindly Confirm Your Password',
+                            validatorText: 'Confirm Password',
+                            obscuretext: _isHiddenconfirm,
                             formController: confirmPassController,
-                            obscuretext: true,
+                            visibilityIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _isHiddenconfirm = !_isHiddenconfirm;
+                                  });
+                                },
+                                icon: _isHiddenconfirm
+                                    ? const Icon(
+                                        Icons.visibility_off,
+                                        color: Colors.grey,
+                                      )
+                                    : const Icon(
+                                        Icons.visibility,
+                                        color: Colors.grey,
+                                      )),
                             hinttxt: 'Confirm Password'),
                       ],
                     )),
@@ -140,16 +172,30 @@ class _SignUpAppState extends State<SignUpApp> {
                     var userContact = contactController.text.trim();
                     var storeName = storeNameController.text.trim();
                     var userAddress = addressController.text.trim();
-                    var userPassword = passwordController.text.trim();
+                    var userPassword = createPassController.text.trim();
                     var confirmPassword = confirmPassController.text.trim();
                     if (formKey.currentState!.validate()) {
-                      if (userPassword.length < 8) {
+                      if (userPassword.isEmpty) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: Colors.red,
+                          content: Text('Enter A Password'),
+                        ));
+                      } else if (userPassword.length < 8) {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(const SnackBar(
                           behavior: SnackBarBehavior.floating,
                           backgroundColor: Colors.red,
                           content: Text(
                               'Password Must be atleast 8 digits or Longer'),
+                        ));
+                      } else if (userPassword == userName) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: Colors.red,
+                          content: Text('Name and Password can not be same'),
                         ));
                       } else if (userPassword != confirmPassword) {
                         ScaffoldMessenger.of(context)
@@ -159,33 +205,44 @@ class _SignUpAppState extends State<SignUpApp> {
                           content: Text('Passwords Do Not Match'),
                         ));
                       } else {
-                        await auth
-                            .createUserWithEmailAndPassword(
-                                email: userEmail, password: userPassword)
-                            .then(
-                              (value) => {
-                                signUpuser(userName, userEmail, userContact,
-                                    storeName, userAddress, userPassword),
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(const SnackBar(
-                                  behavior: SnackBarBehavior.floating,
-                                  backgroundColor: Colors.green,
-                                  content: Text('User Created Successfully!'),
-                                )),
-                                FirebaseAuth.instance.signOut(),
-                                passwordController.clear(),
-                                fullnameController.clear(),
-                                contactController.clear(),
-                                storeNameController.clear(),
-                                addressController.clear(),
-                                createPassController.clear(),
-                                confirmPassController.clear(),
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => LoginApp()))
-                              },
-                            );
+                        try {
+                          await auth
+                              .createUserWithEmailAndPassword(
+                                  email: userEmail, password: userPassword)
+                              .then(
+                                (value) => {
+                                  signUpuser(userName, userEmail, userContact,
+                                      storeName, userAddress, userPassword),
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
+                                    behavior: SnackBarBehavior.floating,
+                                    backgroundColor: Colors.green,
+                                    content: Text('User Created Successfully!'),
+                                  )),
+                                  FirebaseAuth.instance.signOut(),
+                                  passwordController.clear(),
+                                  fullnameController.clear(),
+                                  contactController.clear(),
+                                  storeNameController.clear(),
+                                  addressController.clear(),
+                                  createPassController.clear(),
+                                  confirmPassController.clear(),
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => LoginApp()))
+                                },
+                              );
+                        } on FirebaseAuthException catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            behavior: SnackBarBehavior.floating,
+                            backgroundColor: Colors.red,
+                            content: e.code == 'email-already-in-use'
+                                ? Text('Email Already In use')
+                                : Text(
+                                    'Failed To create An account Try Again later'),
+                          ));
+                        }
                       }
                     }
                   },

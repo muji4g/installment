@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
@@ -43,6 +44,7 @@ class ImageAdd extends StatefulWidget {
 }
 
 class _ImageAddState extends State<ImageAdd> {
+  String imageURL = '';
   Future<void> pickImage() async {
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
@@ -65,7 +67,7 @@ class _ImageAddState extends State<ImageAdd> {
               height: size.height * .13,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(18),
-                color: Colors.white,
+                color: white,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.04),
@@ -76,7 +78,7 @@ class _ImageAddState extends State<ImageAdd> {
                 ],
               ),
               child: Stack(
-                alignment: Alignment.topRight,
+                alignment: Alignment.topLeft,
                 children: [
                   Image.file(
                     widget.selectedImages[i],
@@ -111,7 +113,7 @@ class _ImageAddState extends State<ImageAdd> {
               ),
               child: TextButton(
                 style: ButtonStyle(
-                  splashFactory: InkRipple.splashFactory,
+                  splashFactory: null,
                   overlayColor:
                       MaterialStateColor.resolveWith((states) => primaryBlue),
                 ),
@@ -195,6 +197,12 @@ class _ProductInfoState extends State<ProductInfo> {
                           hintStyle: customTextgrey.copyWith(
                               fontSize: size.width * 0.035),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'The Product Must Have a Title';
+                          }
+                          return null;
+                        },
                       ),
                       TextFormField(
                         controller: widget.quantitycontroller,
@@ -206,6 +214,12 @@ class _ProductInfoState extends State<ProductInfo> {
                             fontSize: size.width * 0.035,
                           ),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'The Product Must Have a Quantity';
+                          }
+                          return null;
+                        },
                       ),
                       TextFormField(
                         controller: widget.pricecontroller,
@@ -216,6 +230,12 @@ class _ProductInfoState extends State<ProductInfo> {
                           hintStyle: customTextgrey.copyWith(
                               fontSize: size.width * 0.035),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'The Product Must Have a Price';
+                          }
+                          return null;
+                        },
                       ),
                     ],
                   ))
@@ -266,28 +286,49 @@ class BluebgContainer extends StatelessWidget {
 ///////////////////////////////////////////////////////////////////////////////////
 class Description extends StatelessWidget {
   final TextEditingController descriptioncontroller;
-  const Description({super.key, required this.descriptioncontroller});
+  final formKey;
+  const Description(
+      {super.key, required this.descriptioncontroller, required this.formKey});
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
+      height: size.height * 0.15,
       decoration: BoxDecoration(
         color: white,
         borderRadius: BorderRadius.circular(18),
       ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: size.width * 0.04,
-        ),
-        child: TextField(
-          controller: descriptioncontroller,
-          maxLines: null,
-          decoration: InputDecoration(
-            hintText: 'Description',
-            border: InputBorder.none,
-            hintStyle: customTextgrey.copyWith(fontSize: size.width * 0.035),
-          ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: size.width * 0.04,
+              ),
+              child: Form(
+                key: formKey,
+                child: TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'This Field cannot be empty';
+                    }
+                    return null;
+                  },
+                  maxLength: 250,
+                  controller: descriptioncontroller,
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    hintText: 'Hightlight the Main features Only',
+                    border: InputBorder.none,
+                    hintStyle:
+                        customTextgrey.copyWith(fontSize: size.width * 0.035),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -21,6 +21,7 @@ class TextBtn extends StatelessWidget {
     return TextButton(
         onPressed: onPressedFunction,
         child: Text(
+          textAlign: TextAlign.start,
           btntxt,
           style: customTextblue.copyWith(
               fontSize: size.width * fontsize, fontWeight: FontWeight.w500),
@@ -198,7 +199,7 @@ class CustomButton extends StatelessWidget {
   }
 }
 
-class BottomSheetButton extends StatelessWidget {
+class BottomSheetButton extends StatefulWidget {
   final double width;
   final double height;
   final String btntxt;
@@ -211,22 +212,27 @@ class BottomSheetButton extends StatelessWidget {
       required this.height});
 
   @override
+  State<BottomSheetButton> createState() => _BottomSheetButtonState();
+}
+
+class _BottomSheetButtonState extends State<BottomSheetButton> {
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return InkWell(
-      onTap: onPressed,
+      onTap: widget.onPressed,
       child: TextButton(
-        onPressed: onPressed,
+        onPressed: widget.onPressed,
         child: Container(
           alignment: Alignment.center,
-          width: width,
-          height: height,
+          width: widget.width,
+          height: widget.height,
           decoration: BoxDecoration(
               gradient: lineargradient,
               borderRadius: BorderRadius.circular(24)),
           child: Text(
-            btntxt,
-            style: customTextwhite.copyWith(fontSize: width * 0.06),
+            widget.btntxt,
+            style: customTextwhite.copyWith(fontSize: widget.width * 0.06),
           ),
         ),
       ),

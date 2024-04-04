@@ -48,7 +48,6 @@ class _CustomersScreenState extends State<CustomersScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AppSearchBar(
-              onChanged: (value) {},
               hintText: 'Search Customers',
             ),
             Padding(
